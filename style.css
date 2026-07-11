@@ -2491,3 +2491,40 @@ button:disabled,
 .library-grid > * {
   min-width: 0;
 }
+
+/* Earnings panel: 3-col desktop variant of .a-stats that still respects
+   the .a-stats mobile collapse rules below (no inline override anymore) */
+.a-stats-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Panel headers with a title + action button (My Works, etc.) — wrap
+   instead of squeezing the button off-screen on narrow viewports */
+.a-panel-flex-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* "How Yorha Works" 3-step section on the landing page */
+.how-it-works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .how-it-works-grid {
+    grid-template-columns: 1fr;
+  }
+  .a-stats-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 380px) {
+  .a-stats-3 {
+    grid-template-columns: 1fr;
+  }
+}

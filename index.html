@@ -210,7 +210,7 @@
   </section>
   <section class="section section-alt">
     <div class="section-header"><div><div class="section-label">Platform</div><h2 class="section-title">How Yorha Works</h2></div></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+    <div class="how-it-works-grid">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:30px 22px;">
         <div style="font-family:'Cinzel',serif;font-size:52px;font-weight:900;color:var(--border);margin-bottom:12px;">01</div>
         <div style="font-size:26px;margin-bottom:9px;">🔍</div>
@@ -654,7 +654,7 @@
 
       <!-- MY WORKS PANEL -->
       <div id="apanel-works" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;">
+        <div class="a-panel-flex-header" style="margin-bottom:26px;">
           <div><div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">My Works</div><div style="font-size:14px;color:var(--text3);">All titles you've uploaded to Yorha.</div></div>
           <button class="btn btn-primary" onclick="showAPanel('upload')">+ Upload New</button>
         </div>
@@ -673,7 +673,7 @@
       <!-- EARNINGS PANEL -->
       <div id="apanel-earnings" style="display:none;">
         <div style="margin-bottom:26px;"><div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">Earnings</div><div style="font-size:14px;color:var(--text3);">Track your income per title and over time.</div></div>
-        <div class="a-stats" style="grid-template-columns:repeat(3,1fr);">
+        <div class="a-stats a-stats-3">
           <div class="a-stat"><div class="a-stat-label">This Month</div><div class="a-stat-num" id="aearn-month">₦0</div><div class="a-stat-change">Current calendar month</div></div>
           <div class="a-stat"><div class="a-stat-label">All Time</div><div class="a-stat-num" id="aearn-alltime">₦0</div><div class="a-stat-change">Total earned</div></div>
           <div class="a-stat"><div class="a-stat-label">Pending Payout</div><div class="a-stat-num" id="aearn-pending">₦0</div><div class="a-stat-change">After 10% platform fee</div></div>
