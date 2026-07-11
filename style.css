@@ -29,6 +29,7 @@
   --radius: 12px;
   --radius-sm: 8px;
   --green: #059669;
+  --red: #e5484d;
 }
 
 [data-theme="dark"] {
@@ -51,6 +52,7 @@
   --shadow: 0 2px 16px rgba(0, 0, 0, .45);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, .65);
   --green: #34D399;
+  --red: #ff6b6b;
 }
 
 /* ── BODY & SCROLLBAR ── */
@@ -87,10 +89,6 @@ body {
 }
 #page-reader-home.page.active {
   display: block;
-}
-#page-reader-home .hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 }
 
 @keyframes fadeUp {
@@ -402,7 +400,8 @@ nav {
 }
 
 /* ── PRODUCT GRID ── */
-.product-grid {
+.product-grid,
+.store-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
   gap: 20px;
@@ -864,9 +863,7 @@ footer {
   color: #FCA5A5;
 }
 
-/* ── DISABLED STATE ── (this previously had no selector at all — a stray
-   syntax error in the original file, and it meant disabled buttons like
-   "Edit" had no visual feedback) */
+/* ── DISABLED STATE ── */
 button:disabled,
 .btn:disabled {
   opacity: 0.6;
@@ -1141,16 +1138,16 @@ button:disabled,
   font-weight: 700;
 }
 .sidebar-option-18plus .dot {
-  background: var(--red, #e5484d);
+  background: var(--red);
 }
 .sidebar-option-18plus:hover,
 .sidebar-option-18plus.active {
   background: rgba(229, 72, 77, 0.12);
-  color: var(--red, #e5484d);
+  color: var(--red);
 }
 .sidebar-option-18plus:hover .dot,
 .sidebar-option-18plus.active .dot {
-  background: var(--red, #e5484d);
+  background: var(--red);
 }
 
 .store-main {
@@ -1793,6 +1790,8 @@ button:disabled,
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .a-panel-title {
@@ -1961,6 +1960,75 @@ button:disabled,
   margin-top: 5px;
 }
 
+/* ── Mobile hamburger & drawer ── */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text);
+  padding: 8px;
+  line-height: 1;
+}
+
+.mobile-drawer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 500;
+}
+.mobile-drawer-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+.mobile-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 260px;
+  height: 100%;
+  background: var(--card);
+  border-left: 1px solid var(--border);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mobile-drawer-panel a,
+.mobile-drawer-panel button {
+  display: block;
+  padding: 13px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+  background: none;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.mobile-drawer-panel a:hover,
+.mobile-drawer-panel button:hover {
+  background: var(--hover);
+}
+.mobile-drawer-panel a.active {
+  background: var(--tag-bg);
+  color: var(--purple);
+  font-weight: 600;
+  border-left-color: var(--purple);
+}
+.mobile-drawer.open {
+  display: block;
+}
+
 /* ── RESPONSIVE ── */
 /* ════════════════════════════════
    TABLET (max 900px)
@@ -2005,7 +2073,8 @@ button:disabled,
     align-items: flex-start;
     gap: 13px;
   }
-  .product-grid {
+  .product-grid,
+  .store-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -2204,7 +2273,8 @@ button:disabled,
   .section-title {
     font-size: 20px;
   }
-  .product-grid {
+  .product-grid,
+  .store-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
@@ -2230,10 +2300,6 @@ button:disabled,
     padding: 6px 12px;
     white-space: nowrap;
   }
-  .store-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
 
   /* Product detail */
   .product-page {
@@ -2246,7 +2312,7 @@ button:disabled,
     font-size: 22px;
   }
   .product-info-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   /* Auth */
@@ -2283,10 +2349,10 @@ button:disabled,
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  .a-stat-card {
+  .a-stat {
     padding: 16px;
   }
-  .a-stat-val {
+  .a-stat-num {
     font-size: 22px;
   }
   .works-table {
@@ -2395,84 +2461,8 @@ button:disabled,
   }
 }
 
-/* ── Mobile hamburger & drawer ── */
-.hamburger {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  color: var(--text);
-  padding: 8px;
-  line-height: 1;
-}
-
-.mobile-drawer {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 500;
-}
-.mobile-drawer-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-}
-.mobile-drawer-panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 260px;
-  height: 100%;
-  background: var(--card);
-  border-left: 1px solid var(--border);
-  padding: 24px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.mobile-drawer-panel a,
-.mobile-drawer-panel button {
-  display: block;
-  padding: 13px 16px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: var(--text);
-  text-decoration: none;
-  background: none;
-  border: none;
-  border-left: 3px solid transparent;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  transition: background .15s, border-color .15s, color .15s;
-}
-.mobile-drawer-panel a:hover,
-.mobile-drawer-panel button:hover {
-  background: var(--hover);
-}
-.mobile-drawer-panel a.active {
-  background: var(--tag-bg);
-  color: var(--purple);
-  font-weight: 600;
-  border-left-color: var(--purple);
-}
-.mobile-drawer.open {
-  display: block;
-}
-
-@media (max-width: 600px) {
-  .hamburger {
-    display: block;
-  }
-}
-
 /* ── Hero left column padding fix ── */
 .hero > div:first-child {
-  padding-left: 48px;
   min-width: 0;
   box-sizing: border-box;
 }
@@ -2495,16 +2485,6 @@ button:disabled,
    the .a-stats mobile collapse rules below (no inline override anymore) */
 .a-stats-3 {
   grid-template-columns: repeat(3, 1fr);
-}
-
-/* Panel headers with a title + action button (My Works, etc.) — wrap
-   instead of squeezing the button off-screen on narrow viewports */
-.a-panel-flex-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
 }
 
 /* "How Yorha Works" 3-step section on the landing page */
