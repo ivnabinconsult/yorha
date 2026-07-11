@@ -2064,6 +2064,12 @@ button:disabled,
   .hamburger {
     display: block;
   }
+  #reader-nav .nav-right .role-pill,
+  #author-nav .nav-right .role-pill,
+  #reader-nav .nav-right .btn-ghost,
+  #author-nav .nav-right .btn-ghost {
+    display: none;
+  }
   .product-cover-lg {
     position: static;
     max-width: 220px;

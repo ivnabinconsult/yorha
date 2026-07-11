@@ -508,6 +508,7 @@
       <a onclick="showPage('reader-home');toggleMobileMenu()">🏠 Home</a>
       <a onclick="showPage('reader-store');toggleMobileMenu()">🛒 Store</a>
       <a onclick="showPage('reader-library');toggleMobileMenu()">📚 My Library</a>
+      <a onclick="showPage('reader-settings');toggleMobileMenu()">⚙️ Settings</a>
       <hr style="border-color:var(--border);margin:8px 0;">
       <button onclick="logout();toggleMobileMenu()">Sign Out</button>`;
 
