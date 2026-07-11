@@ -295,7 +295,9 @@
 
   function toggleTheme(){
     const dark=document.body.getAttribute('data-theme')==='dark';
-    document.body.setAttribute('data-theme',dark?'light':'dark');
+    const next = dark?'light':'dark';
+    document.body.setAttribute('data-theme',next);
+    try{ localStorage.setItem('yorha_theme', next); }catch(e){}
     document.querySelectorAll('.theme-toggle').forEach(b=>b.textContent=dark?'🌙':'☀️');
   }
 
@@ -513,7 +515,7 @@
       <button onclick="logout();toggleMobileMenu()">Sign Out</button>`;
 
     const authorLinks = `
-      <a onclick="showAPanel('dashboard');toggleMobileMenu()">📊 Dashboard</a>
+      <a onclick="showAPanel('overview');toggleMobileMenu()">📊 Dashboard</a>
       <a onclick="showAPanel('upload');toggleMobileMenu()">📤 Upload</a>
       <a onclick="showAPanel('works');toggleMobileMenu()">📚 My Works</a>
       <a onclick="showAPanel('earnings');toggleMobileMenu()">💰 Earnings</a>
@@ -528,6 +530,9 @@
   window.addEventListener('DOMContentLoaded',()=>{
     const pd=document.getElementById('pub-date');
     if(pd)pd.value=new Date().toISOString().split('T')[0];
+
+    const isDark = document.body.getAttribute('data-theme')==='dark';
+    document.querySelectorAll('.theme-toggle').forEach(b=>b.textContent = isDark ? '☀️' : '🌙');
   });
 
 /* ═══════════════════════════════════════════════
