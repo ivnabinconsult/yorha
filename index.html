@@ -630,11 +630,13 @@
             <div class="a-panel">
               <div class="a-panel-header"><span class="a-panel-title">Publication Date &amp; Status</span></div>
               <div class="a-panel-body">
-                <div class="form-group"><label class="form-label">Upload / Publication Date</label><input class="form-input" type="date" id="pub-date"/></div>
-                <div class="form-group"><label class="form-label">Publish Status</label>
-                  <select class="form-select" id="publish-status" onchange="toggleSchedule(this)">
-                    <option>Publish immediately</option><option>Save as draft</option><option>Schedule for later</option>
-                  </select>
+                <div class="form-row-2">
+                  <div class="form-group"><label class="form-label">Upload / Publication Date</label><input class="form-input" type="date" id="pub-date"/></div>
+                  <div class="form-group"><label class="form-label">Publish Status</label>
+                    <select class="form-select" id="publish-status" onchange="toggleSchedule(this)">
+                      <option>Publish immediately</option><option>Save as draft</option><option>Schedule for later</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="form-group" id="schedule-date-wrap" style="display:none;">
                   <label class="form-label">Scheduled Date &amp; Time</label>

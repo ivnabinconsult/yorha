@@ -506,20 +506,30 @@
     const isOpen = drawer.classList.contains('open');
     if(isOpen){ drawer.classList.remove('open'); return; }
 
+    const currentPageEl = document.querySelector('.page.active');
+    const currentPageId = currentPageEl ? currentPageEl.id : '';
+    let currentPanel = '';
+    if (role === 'author') {
+      const openPanel = document.querySelector('[id^="apanel-"]:not([style*="display: none"]):not([style*="display:none"])');
+      if (openPanel) currentPanel = openPanel.id.replace('apanel-', '');
+    }
+    const isActive = (id) => id === currentPageId ? ' active' : '';
+    const isActivePanel = (name) => name === currentPanel ? ' active' : '';
+
     const readerLinks = `
-      <a onclick="showPage('reader-home');toggleMobileMenu()">🏠 Home</a>
-      <a onclick="showPage('reader-store');toggleMobileMenu()">🛒 Store</a>
-      <a onclick="showPage('reader-library');toggleMobileMenu()">📚 My Library</a>
-      <a onclick="showPage('reader-settings');toggleMobileMenu()">⚙️ Settings</a>
+      <a class="${isActive('page-reader-home').trim()}" onclick="showPage('reader-home');toggleMobileMenu()">🏠 Home</a>
+      <a class="${isActive('page-reader-store').trim()}" onclick="showPage('reader-store');toggleMobileMenu()">🛒 Store</a>
+      <a class="${isActive('page-reader-library').trim()}" onclick="showPage('reader-library');toggleMobileMenu()">📚 My Library</a>
+      <a class="${isActive('page-reader-settings').trim()}" onclick="showPage('reader-settings');toggleMobileMenu()">⚙️ Settings</a>
       <hr style="border-color:var(--border);margin:8px 0;">
       <button onclick="logout();toggleMobileMenu()">Sign Out</button>`;
 
     const authorLinks = `
-      <a onclick="showAPanel('overview');toggleMobileMenu()">📊 Dashboard</a>
-      <a onclick="showAPanel('upload');toggleMobileMenu()">📤 Upload</a>
-      <a onclick="showAPanel('works');toggleMobileMenu()">📚 My Works</a>
-      <a onclick="showAPanel('earnings');toggleMobileMenu()">💰 Earnings</a>
-      <a onclick="showAPanel('settings');toggleMobileMenu()">⚙️ Settings</a>
+      <a class="${isActivePanel('overview').trim()}" onclick="showAPanel('overview');toggleMobileMenu()">📊 Dashboard</a>
+      <a class="${isActivePanel('upload').trim()}" onclick="showAPanel('upload');toggleMobileMenu()">📤 Upload</a>
+      <a class="${isActivePanel('works').trim()}" onclick="showAPanel('works');toggleMobileMenu()">📚 My Works</a>
+      <a class="${isActivePanel('earnings').trim()}" onclick="showAPanel('earnings');toggleMobileMenu()">💰 Earnings</a>
+      <a class="${isActivePanel('settings').trim()}" onclick="showAPanel('settings');toggleMobileMenu()">⚙️ Settings</a>
       <hr style="border-color:var(--border);margin:8px 0;">
       <button onclick="logout();toggleMobileMenu()">Sign Out</button>`;
 

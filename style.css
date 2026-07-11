@@ -22,6 +22,7 @@
   --ember-light: #FFA25B;
   --tag-bg: #F0E9FB;
   --tag-text: #5B21B6;
+  --hover: #F0E9FB;
   --nav-bg: rgba(252, 250, 255, .88);
   --shadow: 0 2px 16px rgba(90, 30, 160, .08);
   --shadow-lg: 0 8px 40px rgba(90, 30, 160, .16);
@@ -45,6 +46,7 @@
   --ember-light: #FFB088;
   --tag-bg: #1F1436;
   --tag-text: #D8B4FE;
+  --hover: #1F1436;
   --nav-bg: rgba(9, 6, 17, .82);
   --shadow: 0 2px 16px rgba(0, 0, 0, .45);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, .65);
@@ -149,6 +151,12 @@ body {
 /* ── FORMS ── */
 .form-group {
   margin-bottom: 18px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .form-label {
@@ -2123,6 +2131,11 @@ button:disabled,
    MOBILE (max 600px)
 ════════════════════════════════ */
 @media (max-width: 600px) {
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
   /* Nav */
   nav {
     padding: 0 16px;
@@ -2412,13 +2425,21 @@ button:disabled,
   text-decoration: none;
   background: none;
   border: none;
+  border-left: 3px solid transparent;
   cursor: pointer;
   text-align: left;
   width: 100%;
+  transition: background .15s, border-color .15s, color .15s;
 }
 .mobile-drawer-panel a:hover,
 .mobile-drawer-panel button:hover {
   background: var(--hover);
+}
+.mobile-drawer-panel a.active {
+  background: var(--tag-bg);
+  color: var(--purple);
+  font-weight: 600;
+  border-left-color: var(--purple);
 }
 .mobile-drawer.open {
   display: block;
