@@ -596,11 +596,11 @@ async function loadReaderLibrary(){
         : orders.map(o => {
             const p = o.product || {};
             return `<tr>
-              <td><div class="wt-title">${p.title || 'Untitled'}</div><div class="wt-sub">by ${p.authorName || 'Unknown'}</div></td>
-              <td>${p.contentType || ''}</td>
-              <td><span class="date-badge">📅 ${formatDate(o.paidAt)}</span></td>
-              <td style="color:var(--text);font-weight:600;">₦${Number(o.amount).toLocaleString()}</td>
-              <td><button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="downloadLibraryItem('${p._id}')">Download</button></td>
+              <td data-label=""><div class="wt-title">${p.title || 'Untitled'}</div><div class="wt-sub">by ${p.authorName || 'Unknown'}</div></td>
+              <td data-label="Type">${p.contentType || ''}</td>
+              <td data-label="Date"><span class="date-badge">📅 ${formatDate(o.paidAt)}</span></td>
+              <td data-label="Amount" style="color:var(--text);font-weight:600;">₦${Number(o.amount).toLocaleString()}</td>
+              <td data-label=""><button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="downloadLibraryItem('${p._id}')">Download</button></td>
             </tr>`;
           }).join('');
     }
@@ -774,14 +774,14 @@ function renderAuthorWorks(){
       ? `<img src="${p.coverImage.url}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>`
       : m.emoji;
     return `<tr>
-      <td><div class="wt-cover ${m.cover}">${coverHtml}</div></td>
-      <td><div class="wt-title">${p.title}</div><div class="wt-sub">${p.genre || ''}</div></td>
-      <td>${p.contentType}</td>
-      <td>₦${Number(p.price).toLocaleString()}</td>
-      <td><span class="date-badge">📅 ${formatDate(p.createdAt)}</span></td>
-      <td><strong>${p.salesCount || 0}</strong></td>
-      <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-      <td><button class="btn btn-ghost" style="font-size:12px;padding:6px 10px;" onclick="openEditProductModal('${p._id}')">Edit</button></td>
+      <td data-label="" class="wt-cover-cell"><div class="wt-cover ${m.cover}">${coverHtml}</div></td>
+      <td data-label="" class="wt-title-cell"><div class="wt-title">${p.title}</div><div class="wt-sub">${p.genre || ''}</div></td>
+      <td data-label="Type">${p.contentType}</td>
+      <td data-label="Price">₦${Number(p.price).toLocaleString()}</td>
+      <td data-label="Uploaded"><span class="date-badge">📅 ${formatDate(p.createdAt)}</span></td>
+      <td data-label="Sales"><strong>${p.salesCount || 0}</strong></td>
+      <td data-label="Status"><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+      <td data-label=""><button class="btn btn-ghost" style="font-size:12px;padding:6px 10px;" onclick="openEditProductModal('${p._id}')">Edit</button></td>
     </tr>`;
   }).join('');
 }
@@ -916,11 +916,11 @@ function renderAuthorEarnings(){
     byTitleEl.innerHTML = rows.length === 0
       ? '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3);">No sales yet.</td></tr>'
       : rows.map(r => `<tr>
-          <td><div class="wt-title">${r.title}</div></td>
-          <td>${r.sales}</td>
-          <td>₦${Number(r.gross).toLocaleString()}</td>
-          <td>₦${Number(r.fee).toLocaleString()}</td>
-          <td style="color:var(--green);font-weight:700;">₦${Number(r.earnings).toLocaleString()}</td>
+          <td data-label=""><div class="wt-title">${r.title}</div></td>
+          <td data-label="Sales">${r.sales}</td>
+          <td data-label="Gross">₦${Number(r.gross).toLocaleString()}</td>
+          <td data-label="Platform Fee">₦${Number(r.fee).toLocaleString()}</td>
+          <td data-label="Your Earnings" style="color:var(--green);font-weight:700;">₦${Number(r.earnings).toLocaleString()}</td>
         </tr>`).join('');
   }
 
