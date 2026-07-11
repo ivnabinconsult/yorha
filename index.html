@@ -210,7 +210,7 @@
   </section>
   <section class="section section-alt">
     <div class="section-header"><div><div class="section-label">Platform</div><h2 class="section-title">How Yorha Works</h2></div></div>
-    <div class="how-it-works-grid">
+    <div class="grid-3" style="gap:24px;">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:30px 22px;">
         <div style="font-family:'Cinzel',serif;font-size:52px;font-weight:900;color:var(--border);margin-bottom:12px;">01</div>
         <div style="font-size:26px;margin-bottom:9px;">🔍</div>
@@ -558,7 +558,7 @@
           <div class="a-stat"><div class="a-stat-label">Published</div><div class="a-stat-num" id="astat-published">0</div><div class="a-stat-change" id="astat-published-sub">0 drafts pending</div></div>
           <div class="a-stat"><div class="a-stat-label">Total Readers</div><div class="a-stat-num" id="astat-readers">0</div><div class="a-stat-change">Unique buyers</div></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">
+        <div class="grid-2" style="gap:22px;">
           <div class="a-panel">
             <div class="a-panel-header"><span class="a-panel-title">Recent Sales</span></div>
             <div id="author-recent-sales">
@@ -579,7 +579,7 @@
       <!-- UPLOAD PANEL -->
       <div id="apanel-upload" style="display:none;">
         <div style="margin-bottom:26px;"><div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">Upload a New Work</div><div style="font-size:14px;color:var(--text3);">Fill in the details and upload your file to publish.</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;">
+        <div class="grid-2" style="gap:26px;">
           <div>
             <div class="a-panel">
               <div class="a-panel-header"><span class="a-panel-title">Work Details</span></div>
@@ -654,7 +654,7 @@
 
       <!-- MY WORKS PANEL -->
       <div id="apanel-works" style="display:none;">
-        <div class="a-panel-flex-header" style="margin-bottom:26px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;">
           <div><div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">My Works</div><div style="font-size:14px;color:var(--text3);">All titles you've uploaded to Yorha.</div></div>
           <button class="btn btn-primary" onclick="showAPanel('upload')">+ Upload New</button>
         </div>
@@ -700,7 +700,7 @@
       <!-- PAYOUT PANEL -->
       <div id="apanel-payout" style="display:none;">
         <div style="margin-bottom:26px;"><div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">Payout</div><div style="font-size:14px;color:var(--text3);">Withdraw your earnings to your bank account.</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;">
+        <div class="grid-2" style="gap:26px;">
           <div>
             <div class="payout-balance"><div class="pb-label">Available Balance</div><div class="pb-amount" id="payout-balance-amount">₦0</div><div class="pb-sub">After 10% platform fee · Ready to withdraw</div></div>
             <div class="a-panel">
@@ -727,7 +727,7 @@
       <!-- SETTINGS PANEL -->
       <div id="apanel-settings" style="display:none;">
         <div style="margin-bottom:26px;"><div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;">Settings</div><div style="font-size:14px;color:var(--text3);">Manage your profile and account details.</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;">
+        <div class="grid-2" style="gap:26px;">
           <div class="a-panel">
             <div class="a-panel-header"><span class="a-panel-title">Profile</span></div>
             <div class="a-panel-body">
@@ -958,7 +958,7 @@
     <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="edit-description"></textarea></div>
     <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" id="edit-tags" type="text"/></div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="grid-2" style="gap:14px;">
       <div class="form-group"><label class="form-label">Language</label><input class="form-input" id="edit-language" type="text"/></div>
       <div class="form-group"><label class="form-label">Status</label>
         <select class="form-select" id="edit-status">
