@@ -1736,6 +1736,7 @@ button:disabled,
 
 .author-main {
   padding: 34px 44px;
+  min-width: 0;
 }
 
 /* AUTHOR STATS */
