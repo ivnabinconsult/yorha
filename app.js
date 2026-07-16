@@ -1,3 +1,26 @@
+  // ── Global loading overlay (auto-shows on every fetch call)
+  (function(){
+    let activeRequests = 0;
+    const overlay = () => document.getElementById('loadingOverlay');
+    function showLoading(){
+      activeRequests++;
+      const el = overlay();
+      if (el) el.style.display = 'flex';
+    }
+    function hideLoading(){
+      activeRequests = Math.max(0, activeRequests - 1);
+      if (activeRequests === 0){
+        const el = overlay();
+        if (el) el.style.display = 'none';
+      }
+    }
+    const originalFetch = window.fetch;
+    window.fetch = function(...args){
+      showLoading();
+      return originalFetch.apply(this, args).finally(hideLoading);
+    };
+  })();
+
   // ── Product state
   let ALL_PRODUCTS = [];
   let ACTIVE_FILTER = 'All';
