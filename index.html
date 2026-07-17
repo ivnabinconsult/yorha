@@ -59,11 +59,6 @@
       <div class="auth-title">Welcome, Reader.</div>
       <div class="auth-sub">Sign in to your reading account.</div>
       <div id="google-btn-reader" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--text3);font-size:12px;"><div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"/></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Your password"/></div>
-      <div style="text-align:right;margin-bottom:16px;"><a style="font-size:13px;color:var(--purple);cursor:pointer;" onclick="showForgotPassword('reader')">Forgot password?</a></div>
-      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:15px;" onclick="readerLogin()">Sign In as Reader</button>
       <div class="auth-switch">No account? <a onclick="toggleReaderAuth()">Create one →</a></div>
     </div>
     <div class="auth-form-box" id="reader-register-box" style="display:none;">
@@ -71,13 +66,7 @@
       <div class="auth-title">Join as a Reader.</div>
       <div class="auth-sub">Create your free reading account.</div>
       <div id="google-btn-reader-register" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--text3);font-size:12px;"><div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div></div>
-      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" placeholder="Your name"/></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"/></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Create a password"/></div>
-      <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-input" type="password" placeholder="Repeat password"/></div>
       <div style="font-size:12px;color:var(--text3);margin-bottom:10px;text-align:center;">By creating an account, you agree to our <a href="terms.html" target="_blank" style="color:var(--purple);">Terms</a> and <a href="privacy.html" target="_blank" style="color:var(--purple);">Privacy Policy</a>.</div>
-      <button class="btn btn-primary" style="width:100%;padding:13px;font-size:15px;" onclick="readerRegister()">Create Reader Account</button>
       <div class="auth-switch">Have an account? <a onclick="toggleReaderAuth()">Sign in →</a></div>
     </div>
     <div class="auth-form-box" id="reader-check-email-box" style="display:none;text-align:center;">
@@ -109,11 +98,6 @@
       <div class="auth-title">Author Sign In.</div>
       <div class="auth-sub">Access your creator dashboard.</div>
       <div id="google-btn-author" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--text3);font-size:12px;"><div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"/></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Your password"/></div>
-      <div style="text-align:right;margin-bottom:16px;"><a style="font-size:13px;color:var(--green);cursor:pointer;" onclick="showForgotPassword('author')">Forgot password?</a></div>
-      <button class="btn btn-green" style="width:100%;padding:13px;font-size:15px;" onclick="authorLogin()">Sign In as Author</button>
       <div class="auth-switch">New author? <a onclick="toggleAuthorAuth()" style="color:var(--green);">Apply to sell →</a></div>
     </div>
     <div class="auth-form-box" id="author-register-box" style="display:none;">
@@ -121,16 +105,7 @@
       <div class="auth-title">Become an Author.</div>
       <div class="auth-sub">Create your creator account on Yorha.</div>
       <div id="google-btn-author-register" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--text3);font-size:12px;"><div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div></div>
-      <div class="form-group"><label class="form-label">Full Name / Pen Name</label><input class="form-input" type="text" placeholder="Your name or pen name"/></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"/></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Create a password"/></div>
-      <div class="form-group"><label class="form-label">Content Type You Create</label>
-        <select class="form-select"><option>eBooks / Novels</option><option>Manga</option><option>Manhwa</option><option>Short Stories</option><option>Mixed</option></select>
-      </div>
-      <div class="form-group"><label class="form-label">Brief Bio (optional)</label><textarea class="form-textarea" placeholder="Tell readers about yourself..." style="min-height:72px;"></textarea></div>
       <div style="font-size:12px;color:var(--text3);margin-bottom:10px;text-align:center;">By creating an account, you agree to our <a href="terms.html" target="_blank" style="color:var(--green);">Terms</a> and <a href="privacy.html" target="_blank" style="color:var(--green);">Privacy Policy</a>.</div>
-      <button class="btn btn-green" style="width:100%;padding:13px;font-size:15px;" onclick="authorRegister()">Create Author Account</button>
       <div class="auth-switch">Already registered? <a onclick="toggleAuthorAuth()" style="color:var(--green);">Sign in →</a></div>
     </div>
     <div class="auth-form-box" id="author-check-email-box" style="display:none;text-align:center;">
@@ -902,6 +877,10 @@
         If you're an author with an unpaid balance, withdraw your earnings first — this will be blocked otherwise.
       </p>
       <div id="delete-account-error" style="display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);color:#EF4444;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;"></div>
+      <div id="delete-account-google-confirm" style="display:none;margin-bottom:16px;">
+        <p style="font-size:13px;color:var(--text3);margin-bottom:10px;">You signed up with Google — confirm with Google to continue.</p>
+        <div id="google-btn-delete-confirm" style="display:flex;justify-content:center;"></div>
+      </div>
       <input id="delete-account-password" type="password" placeholder="Confirm your password" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:16px;" />
       <button id="delete-account-submit-btn" onclick="submitDeleteAccount()" class="btn" style="width:100%;padding:13px;font-size:15px;background:#EF4444;color:#fff;border:none;border-radius:8px;cursor:pointer;">Delete My Account</button>
     </div>

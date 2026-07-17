@@ -702,6 +702,43 @@ function showDeleteAccountModal() {
   document.getElementById('delete-account-step-2').style.display = 'none';
   document.getElementById('delete-account-password').value = '';
   document.getElementById('delete-account-error').style.display = 'none';
+
+  // Google-linked accounts never set a real password, so they can't fill
+  // in the password field — swap it for a "confirm with Google" button.
+  const user = Auth.getUser();
+  const isGoogleAccount = !!user?.googleId;
+  document.getElementById('delete-account-google-confirm').style.display = isGoogleAccount ? 'block' : 'none';
+  document.getElementById('delete-account-password').style.display = isGoogleAccount ? 'none' : 'block';
+  document.getElementById('delete-account-submit-btn').style.display = isGoogleAccount ? 'none' : 'block';
+
+  if (isGoogleAccount) renderDeleteConfirmGoogleButton();
+}
+
+// Renders on demand rather than at page load, since the modal (and its
+// button container) doesn't exist in the DOM until this point.
+function renderDeleteConfirmGoogleButton() {
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    setTimeout(renderDeleteConfirmGoogleButton, 200);
+    return;
+  }
+  const el = document.getElementById('google-btn-delete-confirm');
+  if (!el || el.dataset.rendered) return; // renderButton isn't idempotent — only do this once
+  el.dataset.rendered = 'true';
+
+  // Separate initialize() call with its own callback — this must NOT
+  // reuse handleGoogleCredential, since that logs the user into a
+  // session; here we're just confirming identity for a delete, using the
+  // account that's already logged in.
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleDeleteConfirmCredential,
+    ux_mode: 'popup',
+  });
+  google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: 280, text: 'continue_with' });
+}
+
+async function handleDeleteConfirmCredential(response) {
+  await runDeleteAccount({ idToken: response.credential });
 }
 
 function hideDeleteAccountModal() {
@@ -711,7 +748,6 @@ function hideDeleteAccountModal() {
 async function submitDeleteAccount() {
   const password = document.getElementById('delete-account-password').value;
   const errEl    = document.getElementById('delete-account-error');
-  const btn      = document.getElementById('delete-account-submit-btn');
 
   errEl.style.display = 'none';
   if (!password) {
@@ -720,13 +756,21 @@ async function submitDeleteAccount() {
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = 'Deleting…';
+  await runDeleteAccount({ password });
+}
+
+// Shared by both the password path and the Google-confirm path.
+async function runDeleteAccount(payload) {
+  const errEl = document.getElementById('delete-account-error');
+  const btn   = document.getElementById('delete-account-submit-btn');
+
+  errEl.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = 'Deleting…'; }
 
   try {
     await apiFetch('/auth/me', {
       method: 'DELETE',
-      body: JSON.stringify({ password })
+      body: JSON.stringify(payload)
     });
 
     document.getElementById('delete-account-step-1').style.display = 'none';
@@ -735,8 +779,7 @@ async function submitDeleteAccount() {
     errEl.textContent = err.message || 'Could not delete account. Try again.';
     errEl.style.display = 'block';
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Delete My Account';
+    if (btn) { btn.disabled = false; btn.textContent = 'Delete My Account'; }
   }
 }
 
