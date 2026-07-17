@@ -6,6 +6,7 @@
   <title>Yorha — Read. Collect. Create.</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body data-theme="light">
 <script>(function(){try{var t=localStorage.getItem('yorha_theme');if(t==='dark')document.body.setAttribute('data-theme','dark');}catch(e){}})();</script>
@@ -57,6 +58,8 @@
       <div class="auth-back" onclick="showPage('landing')">← Back to home</div>
       <div class="auth-title">Welcome, Reader.</div>
       <div class="auth-sub">Sign in to your reading account.</div>
+      <div id="google-btn-reader" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--text3);font-size:12px;"><div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div></div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"/></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Your password"/></div>
       <div style="text-align:right;margin-bottom:16px;"><a style="font-size:13px;color:var(--purple);cursor:pointer;" onclick="showForgotPassword('reader')">Forgot password?</a></div>
@@ -103,6 +106,8 @@
       <div class="auth-back" onclick="showPage('landing')">← Back to home</div>
       <div class="auth-title">Author Sign In.</div>
       <div class="auth-sub">Access your creator dashboard.</div>
+      <div id="google-btn-author" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--text3);font-size:12px;"><div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div></div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com"/></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Your password"/></div>
       <div style="text-align:right;margin-bottom:16px;"><a style="font-size:13px;color:var(--green);cursor:pointer;" onclick="showForgotPassword('author')">Forgot password?</a></div>

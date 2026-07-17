@@ -6,6 +6,12 @@
 
 const API_BASE = 'https://yorha-backend.onrender.com/api'; // ← change to your Railway URL on deploy
 
+// ← Paste the Client ID from Google Cloud Console (APIs & Services →
+// Credentials → OAuth 2.0 Client IDs → "Web application"). Must have your
+// Netlify URL (and localhost, for testing) under Authorized JavaScript
+// origins. This value is public — it's meant to be visible in frontend code.
+const GOOGLE_CLIENT_ID = '703097766519-0ap4m91uuvvm38fkoe07omc6qfngg3or.apps.googleusercontent.com';
+
 /* ─── Storage helpers ─── */
 const Auth = {
   setSession(token, user) {
@@ -154,6 +160,55 @@ async function resendFromCheckEmailBox(role) {
 }
 
 /* ═══════════════════════════════════════════════
+   GOOGLE SIGN-IN
+═══════════════════════════════════════════════ */
+
+// Fires when the user picks an account in the Google popup. One callback
+// handles both the reader and author buttons — role is inferred from
+// whichever auth page is currently on screen.
+async function handleGoogleCredential(response) {
+  const authorPage = document.getElementById('page-author-auth');
+  const role = (authorPage && authorPage.classList.contains('active')) ? 'author' : 'reader';
+  const box = role === 'reader' ? 'reader-login-box' : 'author-login-box';
+  clearAuthError(box);
+
+  try {
+    const data = await apiFetch('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken: response.credential, role })
+    });
+
+    if (data.user.role !== role) {
+      setAuthError(box, `This Google account is registered as a ${data.user.role}. Please use the ${data.user.role} portal.`);
+      return;
+    }
+
+    Auth.setSession(data.token, data.user);
+    onLoginSuccess(role, data.user);
+  } catch (err) {
+    setAuthError(box, err.message || 'Google sign-in failed. Try again.');
+  }
+}
+
+// GSI's script loads async — poll briefly rather than assuming it's ready
+// by DOMContentLoaded.
+function initGoogleSignIn() {
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    setTimeout(initGoogleSignIn, 200);
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+  });
+  const readerBtn = document.getElementById('google-btn-reader');
+  const authorBtn = document.getElementById('google-btn-author');
+  if (readerBtn) google.accounts.id.renderButton(readerBtn, { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
+  if (authorBtn) google.accounts.id.renderButton(authorBtn, { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
+}
+window.addEventListener('DOMContentLoaded', initGoogleSignIn);
+
+/* ═══════════════════════════════════════════════
    READER AUTH
 ═══════════════════════════════════════════════ */
 
@@ -225,14 +280,17 @@ async function readerRegister() {
   setButtonLoading(btn, true);
 
   try {
-    await apiFetch('/auth/register', {
+    const data = await apiFetch('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password, role: 'reader' })
     });
 
-    // Register no longer logs the user in directly — the account needs
-    // email verification first (see POST /auth/verify-email).
-    showCheckEmailBox('reader', email);
+    // TEMPORARY: registration now returns a token directly and logs the
+    // user straight in — email verification is disabled backend-side
+    // until Resend has a verified domain. See routes/auth.js register
+    // route for details.
+    Auth.setSession(data.token, data.user);
+    onLoginSuccess('reader', data.user);
 
   } catch (err) {
     setAuthError(box, err.message || 'Registration failed. Try again.');
@@ -309,7 +367,7 @@ async function authorRegister() {
   setButtonLoading(btn, true);
 
   try {
-    await apiFetch('/auth/register', {
+    const data = await apiFetch('/auth/register', {
       method: 'POST',
       // BUG FIX: backend expects `contentTypes` (plural, array) to match
       // the User schema's `contentTypes: [String]` field — was sending
@@ -318,7 +376,8 @@ async function authorRegister() {
       body: JSON.stringify({ name, email, password, role: 'author', contentTypes: [contentType], bio })
     });
 
-    showCheckEmailBox('author', email);
+    Auth.setSession(data.token, data.user);
+    onLoginSuccess('author', data.user);
 
   } catch (err) {
     setAuthError(box, err.message || 'Registration failed. Try again.');
