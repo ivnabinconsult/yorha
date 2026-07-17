@@ -163,19 +163,23 @@ async function resendFromCheckEmailBox(role) {
    GOOGLE SIGN-IN
 ═══════════════════════════════════════════════ */
 
-// Fires when the user picks an account in the Google popup. One callback
-// handles both the reader and author buttons — role is inferred from
-// whichever auth page is currently on screen.
+// Fires when the user picks an account in the Google popup. Role comes
+// from whichever auth page is on screen; intent (login vs signup) comes
+// from whether the login box or register box is currently visible — so
+// the same callback correctly routes both flows.
 async function handleGoogleCredential(response) {
   const authorPage = document.getElementById('page-author-auth');
   const role = (authorPage && authorPage.classList.contains('active')) ? 'author' : 'reader';
-  const box = role === 'reader' ? 'reader-login-box' : 'author-login-box';
+
+  const loginBox = document.getElementById(role + '-login-box');
+  const intent = (loginBox && loginBox.style.display !== 'none') ? 'login' : 'signup';
+  const box = intent === 'login' ? `${role}-login-box` : `${role}-register-box`;
   clearAuthError(box);
 
   try {
     const data = await apiFetch('/auth/google', {
       method: 'POST',
-      body: JSON.stringify({ idToken: response.credential, role })
+      body: JSON.stringify({ idToken: response.credential, role, intent })
     });
 
     if (data.user.role !== role) {
@@ -186,6 +190,18 @@ async function handleGoogleCredential(response) {
     Auth.setSession(data.token, data.user);
     onLoginSuccess(role, data.user);
   } catch (err) {
+    if (err.data?.noAccount) {
+      // Trying to sign in with a Google account that has no Yorha
+      // account yet — tell them and flip to the signup box instead of
+      // silently creating one.
+      setAuthError(box, "No account found for this Google email. Redirecting you to sign up…");
+      setTimeout(() => {
+        if (loginBox && loginBox.style.display !== 'none') {
+          role === 'reader' ? toggleReaderAuth() : toggleAuthorAuth();
+        }
+      }, 1200);
+      return;
+    }
     setAuthError(box, err.message || 'Google sign-in failed. Try again.');
   }
 }
@@ -200,11 +216,22 @@ function initGoogleSignIn() {
   google.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
     callback: handleGoogleCredential,
+    // Without this, Google can fall back to a full-page redirect flow on
+    // some browsers — since there's no login_uri configured to catch that
+    // redirect, the tab just navigates away and comes back blank. Forcing
+    // popup mode keeps everything on this page via the JS callback above.
+    ux_mode: 'popup',
   });
-  const readerBtn = document.getElementById('google-btn-reader');
-  const authorBtn = document.getElementById('google-btn-author');
-  if (readerBtn) google.accounts.id.renderButton(readerBtn, { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
-  if (authorBtn) google.accounts.id.renderButton(authorBtn, { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
+  const buttons = [
+    ['google-btn-reader', 320],
+    ['google-btn-author', 320],
+    ['google-btn-reader-register', 320],
+    ['google-btn-author-register', 320],
+  ];
+  buttons.forEach(([id, width]) => {
+    const el = document.getElementById(id);
+    if (el) google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width, text: id.includes('register') ? 'signup_with' : 'continue_with' });
+  });
 }
 window.addEventListener('DOMContentLoaded', initGoogleSignIn);
 
