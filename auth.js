@@ -12,6 +12,44 @@ const API_BASE = 'https://yorha-backend.onrender.com/api'; // ← change to your
 // origins. This value is public — it's meant to be visible in frontend code.
 const GOOGLE_CLIENT_ID = '703097766519-0ap4m91uuvvm38fkoe07omc6qfngg3or.apps.googleusercontent.com';
 
+/* ─── In-app browser detection ───
+   Google blocks OAuth sign-in inside WebViews (WhatsApp, Instagram,
+   Facebook, etc.) as a security policy. Users who open the site through
+   one of these apps hit a silent "Failed to fetch" on Google sign-in.
+   This warns them upfront and offers a way to escape to a real browser. */
+function detectInAppBrowser() {
+  const ua = navigator.userAgent || '';
+  const isInApp = /FBAN|FBAV|Instagram|WhatsApp|Line\/|MicroMessenger|; wv\)/i.test(ua);
+
+  if (!isInApp) return;
+
+  const banner = document.createElement('div');
+  banner.style.cssText = `
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: #fff3cd; color: #664d03; padding: 12px 16px;
+    font-family: sans-serif; font-size: 14px; text-align: center;
+    border-bottom: 1px solid #ffe69c;
+  `;
+  banner.innerHTML = `
+    Sign-in won't work in this in-app browser.
+    <strong>Tap the menu (⋮ or •••) above and choose "Open in Browser"</strong>
+    to continue.
+    <button id="copyLinkBtn" style="margin-left:8px;padding:4px 10px;border:none;
+      background:#664d03;color:#fff;border-radius:4px;cursor:pointer;">
+      Copy Link
+    </button>
+  `;
+  document.body.prepend(banner);
+
+  document.getElementById('copyLinkBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => alert('Link copied! Paste it in Chrome/Safari.'))
+      .catch(() => alert('Could not copy. Long-press the address bar instead.'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', detectInAppBrowser);
+
 /* ─── Storage helpers ─── */
 const Auth = {
   setSession(token, user) {
