@@ -844,6 +844,14 @@ function hideEditProductModal(){
   EDIT_PRODUCT_ID = null;
 }
 
+// Just shows the picked filename — the actual upload happens in
+// submitProductEdit() when the author hits Save, same as the create flow.
+function handleEditCoverSelect(input){
+  const label = document.getElementById('edit-cover-filename');
+  if(!label) return;
+  label.textContent = input.files[0] ? `Selected: ${input.files[0].name}` : '';
+}
+
 async function submitProductEdit(){
   if(!EDIT_PRODUCT_ID) return;
   const btn = document.getElementById('edit-product-save-btn');
