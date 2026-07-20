@@ -408,7 +408,7 @@
 
   function handleFileSelect(input){
     const file=input.files[0];
-    if(file)showFilePreview(file);
+    if(file){ showFilePreview(file); detectFileMetadata(file); }
   }
   function showFilePreview(file){
     document.getElementById('upload-zone').style.display='none';
@@ -417,6 +417,50 @@
     document.getElementById('fp-name').textContent=file.name;
     document.getElementById('fp-size').textContent=(file.size/1024/1024).toFixed(2)+' MB';
   }
+
+  // Auto-fills Total Pages (always) and Total Chapters (ZIP-only, heuristic).
+  // Runs client-side before upload so the author sees it immediately and can
+  // correct it if it's wrong — nothing here is sent to the backend until
+  // they hit Publish.
+  async function detectFileMetadata(file){
+    const pagesInput = document.getElementById('upload-pages');
+    const chaptersInput = document.getElementById('upload-chapters');
+    const chaptersHint = document.getElementById('upload-chapters-hint');
+    const name = file.name.toLowerCase();
+
+    try {
+      if(name.endsWith('.pdf')){
+        const buf = await file.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+        pagesInput.value = pdfDoc.getPageCount();
+        chaptersHint.textContent = 'Not auto-detectable for PDFs — enter manually if known';
+      } else if(name.endsWith('.zip')){
+        const zip = await JSZip.loadAsync(file);
+        const entries = Object.values(zip.files).filter(f => !f.dir);
+        const imageFiles = entries.filter(f => /\.(jpe?g|png|webp|gif)$/i.test(f.name));
+        pagesInput.value = imageFiles.length;
+
+        // Heuristic: if images sit inside top-level folders (e.g.
+        // "Chapter 1/page1.jpg"), each distinct top-level folder = 1 chapter.
+        const topFolders = new Set(
+          imageFiles
+            .map(f => f.name.includes('/') ? f.name.split('/')[0] : null)
+            .filter(Boolean)
+        );
+        if(topFolders.size > 1){
+          chaptersInput.value = topFolders.size;
+          chaptersHint.textContent = `Guessed from ${topFolders.size} folders in your ZIP — double-check it`;
+        } else {
+          chaptersHint.textContent = 'No chapter folders detected — enter manually if known';
+        }
+      }
+    } catch(err){
+      // Detection failing shouldn't block upload — just leave fields blank
+      // for the author to fill in manually.
+      chaptersHint.textContent = 'Could not auto-detect — enter manually if known';
+    }
+  }
+
   function clearFile(){
     document.getElementById('upload-zone').style.display='block';
     document.getElementById('file-preview').style.display='none';
@@ -428,10 +472,13 @@
     e.preventDefault();
     document.getElementById('upload-zone').classList.remove('drag-over');
     const file=e.dataTransfer.files[0];
-    if(file)showFilePreview(file);
+    if(file){ showFilePreview(file); detectFileMetadata(file); }
   }
   function toggleSchedule(sel){
     document.getElementById('schedule-date-wrap').style.display=sel.value==='Schedule for later'?'block':'none';
+  }
+  function togglePreviewChapters(checkbox){
+    document.getElementById('upload-preview-chapters-wrap').style.display = checkbox.checked ? 'block' : 'none';
   }
 
   async function submitUpload(){
@@ -466,6 +513,16 @@
       formData.append('tags', tags);
       formData.append('price', price);
       formData.append('publishStatus', publishStatus);
+      const previewEnabled = document.getElementById('upload-preview-enabled').checked;
+      formData.append('previewChapters', previewEnabled
+        ? (document.getElementById('upload-preview-chapters').value || 1)
+        : 0);
+      const pagesVal = document.getElementById('upload-pages').value;
+      const chaptersVal = document.getElementById('upload-chapters').value;
+      const volumesVal = document.getElementById('upload-volumes').value;
+      if(pagesVal) formData.append('totalPages', pagesVal);
+      if(chaptersVal) formData.append('totalChapters', chaptersVal);
+      if(volumesVal) formData.append('volumes', volumesVal);
       if(publishStatus === 'Schedule for later' && scheduleDatetime){
         formData.append('publishedAt', new Date(scheduleDatetime).toISOString());
       }
@@ -507,6 +564,12 @@
       document.getElementById('upload-price').value = '';
       document.getElementById('upload-description').value = '';
       document.getElementById('upload-tags').value = '';
+      document.getElementById('upload-preview-enabled').checked = false;
+      document.getElementById('upload-preview-chapters-wrap').style.display = 'none';
+      document.getElementById('upload-pages').value = '';
+      document.getElementById('upload-chapters').value = '';
+      document.getElementById('upload-volumes').value = '1';
+      document.getElementById('upload-chapters-hint').textContent = 'Auto-guessed for ZIPs with folders; check it';
       clearFile();
 
       // Refresh real dashboard data so the new title actually shows up
@@ -842,14 +905,6 @@ function openEditProductModal(productId){
 function hideEditProductModal(){
   document.getElementById('edit-product-modal').style.display = 'none';
   EDIT_PRODUCT_ID = null;
-}
-
-// Just shows the picked filename — the actual upload happens in
-// submitProductEdit() when the author hits Save, same as the create flow.
-function handleEditCoverSelect(input){
-  const label = document.getElementById('edit-cover-filename');
-  if(!label) return;
-  label.textContent = input.files[0] ? `Selected: ${input.files[0].name}` : '';
 }
 
 async function submitProductEdit(){

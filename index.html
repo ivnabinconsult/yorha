@@ -574,6 +574,33 @@
                 <div class="form-group"><label class="form-label">Price (₦)</label><input class="form-input" id="upload-price" type="number" placeholder="e.g. 2000" min="0"/></div>
                 <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="upload-description" placeholder="Write a compelling description for your readers..."></textarea></div>
                 <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" id="upload-tags" type="text" placeholder="e.g. action, fantasy, sword art"/></div>
+                <div class="form-group">
+                  <label class="form-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                    <input type="checkbox" id="upload-preview-enabled" onchange="togglePreviewChapters(this)" style="width:auto;"/>
+                    Offer a free sample preview
+                  </label>
+                  <div id="upload-preview-chapters-wrap" style="display:none;margin-top:8px;">
+                    <label class="form-label">Free preview chapters</label>
+                    <input class="form-input" id="upload-preview-chapters" type="number" min="1" value="1"/>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label">Total Pages</label>
+                    <input class="form-input" id="upload-pages" type="number" min="0" placeholder="Auto-detected"/>
+                    <div style="font-size:11px;color:var(--text3);margin-top:4px;">Filled in automatically from your file</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Total Chapters</label>
+                    <input class="form-input" id="upload-chapters" type="number" min="0" placeholder="Optional"/>
+                    <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="upload-chapters-hint">Auto-guessed for ZIPs with folders; check it</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Volumes</label>
+                    <input class="form-input" id="upload-volumes" type="number" min="1" value="1"/>
+                    <div style="font-size:11px;color:var(--text3);margin-top:4px;">Not auto-detectable — set manually</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -791,6 +818,8 @@
     document.getElementById('edit-cover-filename').textContent = file.name;
   }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="auth.js"></script>
 <script src="app.js"></script>
 
