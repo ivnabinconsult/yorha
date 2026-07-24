@@ -483,23 +483,26 @@ function logout() {
    Logs the user out after 10 minutes of no interaction (mouse, keyboard,
    scroll, touch). Only runs while logged in — resets on any activity. */
 const IDLE_LIMIT_MS = 30 * 60 * 1000;
-let idleTimer = null;
 
 function resetIdleTimer() {
   if (!Auth.isLoggedIn()) return;
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => {
-    if (Auth.isLoggedIn()) {
-      logout();
-      alert('You were signed out after 30 minutes of inactivity.');
-    }
-  }, IDLE_LIMIT_MS);
+  localStorage.setItem('yorha_last_active', Date.now().toString());
+}
+
+function checkIdle() {
+  if (!Auth.isLoggedIn()) return;
+  const last = Number(localStorage.getItem('yorha_last_active') || Date.now());
+  if (Date.now() - last >= IDLE_LIMIT_MS) {
+    logout();
+    alert('You were signed out after 30 minutes of inactivity.');
+  }
 }
 
 ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
   window.addEventListener(evt, resetIdleTimer, { passive: true });
 });
 window.addEventListener('DOMContentLoaded', resetIdleTimer);
+setInterval(checkIdle, 30 * 1000); // checked every 30s — catches idle even after tab was backgrounded, and syncs logout across open tabs
 
 /* ─── Route guard — call on any protected page ─── */
 function requireAuth(expectedRole) {
