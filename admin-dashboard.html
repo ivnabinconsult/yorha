@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Yorha — Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --card: #17171b;
+    --border: #2a2a2f;
+    --gold: #c9a24b;
+    --text: #f0f0f0;
+    --muted: #9a9aa2;
+    --green: #4caf6a;
+    --red: #e05555;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 24px;
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1 { font-family: 'Playfair Display', serif; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 32px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .card .label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .card .value { font-size: 26px; font-weight: 700; }
+  .card .value.gold { color: var(--gold); }
+  .card .value.green { color: var(--green); }
+  .card .value.red { color: var(--red); }
+  .section-title { font-size: 15px; color: var(--muted); margin: 32px 0 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .error { color: var(--red); padding: 20px; }
+  .loading { color: var(--muted); padding: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Yorha Admin</h1>
+<p class="sub">Platform overview</p>
+
+<div id="content" class="loading">Loading dashboard…</div>
+
+<script>
+  // ── Adjust these two if your setup differs
+  const API_BASE = 'https://yorha-backend.onrender.com/api';
+  const TOKEN = localStorage.getItem('token'); // change key if your login stores it under a different name
+
+  const naira = (n) => '₦' + Number(n || 0).toLocaleString();
+
+  async function loadDashboard() {
+    const el = document.getElementById('content');
+    if (!TOKEN) {
+      el.innerHTML = '<p class="error">No auth token found in localStorage. Log in as an admin account first.</p>';
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/admin/dashboard`, {
+        headers: { Authorization: `Bearer ${TOKEN}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
+
+      el.innerHTML = `
+        <div class="section-title">Users</div>
+        <div class="grid">
+          <div class="card"><div class="label">Authors</div><div class="value gold">${data.authors}</div></div>
+          <div class="card"><div class="label">Readers</div><div class="value gold">${data.readers}</div></div>
+        </div>
+
+        <div class="section-title">Revenue</div>
+        <div class="grid">
+          <div class="card"><div class="label">Total Revenue</div><div class="value green">${naira(data.revenue.total)}</div></div>
+          <div class="card"><div class="label">Platform Fee (10%)</div><div class="value">${naira(data.revenue.platformFee)}</div></div>
+          <div class="card"><div class="label">Author Earnings (90%)</div><div class="value">${naira(data.revenue.authorEarnings)}</div></div>
+          <div class="card"><div class="label">Transaction Volume</div><div class="value">${data.revenue.transactionVolume}</div></div>
+        </div>
+
+        <div class="section-title">Payouts</div>
+        <div class="grid">
+          <div class="card"><div class="label">Paid Out</div><div class="value green">${naira(data.payouts.paidOut)}</div><div class="label">${data.payouts.paidOutCount} payouts</div></div>
+          <div class="card"><div class="label">Pending Requests</div><div class="value">${naira(data.payouts.pending)}</div><div class="label">${data.payouts.pendingCount} requests</div></div>
+          <div class="card"><div class="label">Failed / Rejected</div><div class="value red">${data.payouts.failedCount}</div></div>
+        </div>
+
+        <div class="section-title">Author Balances</div>
+        <div class="grid">
+          <div class="card"><div class="label">Total Pending Author Balance</div><div class="value gold">${naira(data.pendingAuthorBalance)}</div></div>
+        </div>
+      `;
+    } catch (err) {
+      el.innerHTML = `<p class="error">${err.message}</p>`;
+    }
+  }
+
+  loadDashboard();
+</script>
+
+</body>
+</html>
