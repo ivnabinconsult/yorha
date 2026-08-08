@@ -259,6 +259,11 @@ function initGoogleSignIn() {
     // redirect, the tab just navigates away and comes back blank. Forcing
     // popup mode keeps everything on this page via the JS callback above.
     ux_mode: 'popup',
+    // Mobile Chrome enforces third-party cookie restrictions more
+    // aggressively than desktop, which broke the legacy popup flow and
+    // left a blank screen behind. FedCM uses the browser's native
+    // credential UI instead of relying on those cookies.
+    use_fedcm_for_prompt: true,
   });
   const buttons = [
     ['google-btn-reader', 320],
@@ -796,6 +801,7 @@ function renderDeleteConfirmGoogleButton() {
     client_id: GOOGLE_CLIENT_ID,
     callback: handleDeleteConfirmCredential,
     ux_mode: 'popup',
+    use_fedcm_for_prompt: true,
   });
   google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: 280, text: 'continue_with' });
 }

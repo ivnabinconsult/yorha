@@ -8,34 +8,34 @@
 }
 
 :root {
-  --bg: #FCFAFF;
-  --bg2: #F4F0FA;
-  --bg3: #EBE2F7;
+  --bg: #F6F8FC;
+  --bg2: #ECF1F8;
+  --bg3: #E1E9F5;
   --card: #FFFFFF;
-  --border: #E3D9F2;
-  --text: #160B2B;
-  --text2: #4A3F66;
-  --text3: #8578A0;
-  --purple: #7C2FE0;
-  --purple-light: #A78BFA;
-  --ember: #E8590C;
-  --ember-light: #FFA25B;
-  --tag-bg: #F0E9FB;
-  --tag-text: #5B21B6;
-  --hover: #F0E9FB;
-  --nav-bg: rgba(252, 250, 255, .88);
-  --shadow: 0 2px 16px rgba(90, 30, 160, .08);
-  --shadow-lg: 0 8px 40px rgba(90, 30, 160, .16);
+  --border: #DCE4F0;
+  --text: #10141F;
+  --text2: #4A5568;
+  --text3: #8792A8;
+  --purple: #5B6EF5;
+  --purple-light: #8FA3FF;
+  --ember: #C9963E;
+  --ember-light: #E3B567;
+  --tag-bg: #EEF2FB;
+  --tag-text: #3B4D8B;
+  --hover: #EEF2FB;
+  --nav-bg: rgba(246, 248, 252, .88);
+  --shadow: 0 2px 16px rgba(30, 45, 90, .07);
+  --shadow-lg: 0 8px 40px rgba(30, 45, 90, .13);
   --radius: 12px;
   --radius-sm: 8px;
-  --green: #059669;
+  --green: #0E9F6E;
 }
 
 /* ── LOADING OVERLAY ── */
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(252, 250, 255, .85);
+  background: rgba(246, 248, 252, .85);
   display: none;
   align-items: center;
   justify-content: center;
@@ -44,7 +44,7 @@
 }
 
 [data-theme="dark"] .loading-overlay {
-  background: rgba(7, 5, 14, .85);
+  background: rgba(8, 10, 16, .85);
 }
 
 .loading-spinner {
@@ -61,22 +61,22 @@
 }
 
 [data-theme="dark"] {
-  --bg: #07050E;
-  --bg2: #0C0817;
-  --bg3: #1B0F30;
-  --card: #120A21;
-  --border: #251A3D;
-  --text: #F5F0FF;
-  --text2: #B7A9D9;
-  --text3: #7060A0;
-  --purple: #A855F7;
-  --purple-light: #D8B4FE;
-  --ember: #FF7A45;
-  --ember-light: #FFB088;
-  --tag-bg: #1F1436;
-  --tag-text: #D8B4FE;
-  --hover: #1F1436;
-  --nav-bg: rgba(9, 6, 17, .82);
+  --bg: #080A10;
+  --bg2: #0D1120;
+  --bg3: #151A2C;
+  --card: #0F1322;
+  --border: #212A42;
+  --text: #E9EDF6;
+  --text2: #AEB6C9;
+  --text3: #6C7690;
+  --purple: #8B7CF6;
+  --purple-light: #B3A8FB;
+  --ember: #E3B567;
+  --ember-light: #F0CF94;
+  --tag-bg: #161C30;
+  --tag-text: #CDD6F0;
+  --hover: #161C30;
+  --nav-bg: rgba(8, 10, 16, .82);
   --shadow: 0 2px 16px rgba(0, 0, 0, .45);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, .65);
   --green: #34D399;
@@ -149,14 +149,14 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--purple), #C026D3);
+  background: linear-gradient(135deg, var(--purple), #4C8DFF);
   color: #fff;
-  box-shadow: 0 4px 18px rgba(124, 47, 224, .28);
+  box-shadow: 0 4px 18px rgba(91, 110, 245, .28);
 }
 .btn-primary:hover {
   opacity: .92;
   transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(124, 47, 224, .38);
+  box-shadow: 0 6px 22px rgba(91, 110, 245, .38);
 }
 
 .btn-ghost {
@@ -326,9 +326,9 @@ nav {
 }
 
 .role-reader {
-  background: rgba(124, 58, 237, .15);
+  background: rgba(91, 110, 245, .15);
   color: var(--purple);
-  border: 1px solid rgba(124, 58, 237, .3);
+  border: 1px solid rgba(91, 110, 245, .3);
 }
 
 .role-author {
@@ -479,7 +479,7 @@ nav {
   color: #fff;
 }
 .badge-manga {
-  background: rgba(124, 58, 237, .85);
+  background: rgba(91, 110, 245, .85);
   color: #fff;
 }
 .badge-manhwa {
@@ -648,7 +648,7 @@ footer {
   transform: translateX(-50%);
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(124, 58, 237, .13) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(91, 110, 245, .13) 0%, transparent 70%);
   pointer-events: none;
 }
 [data-theme="dark"] .landing-glow {
@@ -703,7 +703,7 @@ footer {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--purple), #4c1d95);
+  background: linear-gradient(135deg, var(--purple), #3A66D8);
   opacity: 0;
   transition: opacity .25s;
 }
@@ -923,7 +923,7 @@ button:disabled,
   right: -200px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(124, 58, 237, .12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(91, 110, 245, .12) 0%, transparent 70%);
   pointer-events: none;
 }
 [data-theme="dark"] .hero::before {
