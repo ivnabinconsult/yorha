@@ -38,17 +38,25 @@ async function loadNotifications() {
   try {
     const data = await apiFetch('/notifications');
     notifCache = data.notifications || [];
-    renderNotifications();
-    updateNotifBadge();
   } catch (err) {
     console.error('Failed to load notifications:', err.message);
+    notifCache = [];
   }
+  renderNotifications();
+  updateNotifBadge();
 }
 
 function renderNotifications() {
+  const user = (typeof Auth !== 'undefined') ? Auth.getUser() : null;
+  const homeTarget = user && user.role === 'author'
+    ? "showAPanel('overview')" : "showPage('reader-home')";
+
   const html = notifCache.length
     ? notifCache.map(notifItemHtml).join('')
-    : `<div class="notif-empty">No notifications yet.</div>`;
+    : `<div class="notif-empty">
+         <p style="margin:0 0 14px;">No notifications yet.</p>
+         <button class="btn btn-ghost" style="font-size:13px;padding:8px 16px;" onclick="${homeTarget}">Back to home</button>
+       </div>`;
 
   document.querySelectorAll('.notif-panel-list').forEach(el => el.innerHTML = html);
   const page = document.getElementById('notifPageList');

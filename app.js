@@ -258,10 +258,22 @@
       rn.style.display='none';an.style.display='none';
     }
     if(name==='reader-home'){
+      const renderTrending = () => {
+        const twoDaysAgo = Date.now() - 2 * 24 * 60 * 60 * 1000;
+        const trending = ALL_PRODUCTS.filter(p => new Date(p.createdAt).getTime() >= twoDaysAgo).slice(0, 6);
+        const grid = document.getElementById('home-product-grid');
+        if(trending.length){
+          renderProducts('home-product-grid', trending);
+        } else if(grid){
+          grid.innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text3);">
+            No new releases in the past 2 days — check the Store for everything else.
+          </div>`;
+        }
+      };
       if(ALL_PRODUCTS.length > 0){
-        renderProducts('home-product-grid', ALL_PRODUCTS.slice(0,6));
+        renderTrending();
       } else {
-        fetchProducts().then(() => renderProducts('home-product-grid', ALL_PRODUCTS.slice(0,6)));
+        fetchProducts().then(renderTrending);
       }
     }
     if(name==='reader-store'){
@@ -557,7 +569,7 @@
       const statusLabel = publishStatus === 'Publish immediately' ? 'published'
         : publishStatus === 'Schedule for later' ? 'scheduled'
         : 'saved as a draft';
-      alert(`✅ "${title}" ${statusLabel} successfully!`);
+      showToast('Upload successful', `"${title}" was ${statusLabel}.`);
 
       // Reset the form
       document.getElementById('upload-title').value = '';
@@ -577,7 +589,7 @@
       showAPanel('works');
 
     } catch(err){
-      alert(err.message || 'Upload failed. Please try again.');
+      showToast('Upload failed', err.message || 'Please try again.', 'error');
     } finally {
       btn.disabled = false;
       btn.textContent = originalText;
