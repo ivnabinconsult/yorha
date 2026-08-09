@@ -238,6 +238,7 @@
 
   const READER_PAGES=['reader-home','reader-store','reader-product','reader-checkout','reader-readview','reader-library','reader-settings'];
   const AUTHOR_PAGES=['author-dashboard'];
+  const SHARED_PAGES=['notifications'];
 
   function showPage(name){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -254,8 +255,15 @@
       });
     }else if(AUTHOR_PAGES.includes(name)){
       an.style.display='flex';rn.style.display='none';
+    }else if(SHARED_PAGES.includes(name)){
+      const user=Auth.getUser();
+      if(user && user.role==='author'){an.style.display='flex';rn.style.display='none';}
+      else{rn.style.display='flex';an.style.display='none';}
     }else{
       rn.style.display='none';an.style.display='none';
+    }
+    if(name==='notifications' && typeof loadNotifications==='function'){
+      loadNotifications();
     }
     if(name==='reader-home'){
       if(ALL_PRODUCTS.length > 0){

@@ -1,0 +1,98 @@
+/* ── NOTIFICATIONS ── add to style.css ── */
+
+.notif-bell-wrap { position: relative; display: inline-flex; }
+.notif-bell {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2); cursor: pointer; font-size: 18px;
+}
+.notif-bell:hover { background: var(--hover); }
+.notif-badge {
+  position: absolute; top: -2px; right: -2px;
+  background: var(--ember); color: #3A2A08;
+  font-size: 10px; font-weight: 500; line-height: 1;
+  min-width: 16px; height: 16px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px;
+}
+.notif-badge.hidden { display: none; }
+
+/* Dropdown panel */
+.notif-panel {
+  position: absolute; top: 46px; right: 0; z-index: 300;
+  width: 340px; max-height: 420px; overflow-y: auto;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; box-shadow: var(--shadow-lg);
+  display: none;
+}
+.notif-panel.open { display: block; }
+.notif-panel-head {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 0; background: var(--card);
+}
+.notif-panel-head h4 { font-size: 14px; font-weight: 500; color: var(--text); margin: 0; }
+.notif-mark-all { font-size: 12px; color: var(--purple); cursor: pointer; background: none; border: none; }
+
+/* Shared item — used in dropdown AND full page */
+.notif-item {
+  display: flex; gap: 10px; padding: 12px 16px;
+  border-left: 3px solid transparent; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .15s;
+}
+.notif-item:hover { background: var(--hover); }
+.notif-item:last-child { border-bottom: none; }
+.notif-item.unread { background: var(--tag-bg); border-left-color: var(--purple); }
+
+.notif-dot {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.notif-dot.buy     { background: #DFF5EA; color: var(--green); }
+.notif-dot.content { background: var(--tag-bg); color: var(--purple); }
+.notif-dot.system  { background: #FBEFDD; color: var(--ember); }
+body[data-theme="dark"] .notif-dot.buy    { background: #0F2A20; }
+body[data-theme="dark"] .notif-dot.system { background: #2C2110; }
+
+.notif-item-body { flex: 1; min-width: 0; }
+.notif-item-title { font-size: 13px; color: var(--text); margin: 0 0 2px; }
+.notif-item-sub   { font-size: 12px; color: var(--text3); margin: 0; }
+.notif-item-time  { font-size: 11px; color: var(--text3); white-space: nowrap; padding-left: 8px; }
+
+.notif-empty {
+  padding: 40px 16px; text-align: center; color: var(--text3); font-size: 13px;
+}
+
+/* Full notifications page — reuses .notif-item */
+#page-notifications .notif-page-list {
+  max-width: 640px; margin: 0 auto;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Toast */
+.toast-stack {
+  position: fixed; top: 76px; right: 20px; z-index: 500;
+  display: flex; flex-direction: column; gap: 10px; width: 320px;
+}
+.toast {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--green); border-radius: 10px;
+  padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn .2s ease-out;
+}
+.toast.error   { border-left-color: #E24B4A; }
+.toast.info    { border-left-color: var(--purple); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.toast-close { margin-left: auto; color: var(--text3); cursor: pointer; background: none; border: none; font-size: 14px; }
+.toast-bar { height: 2px; background: var(--green); border-radius: 2px; margin-top: 8px; transform-origin: left; animation: toastShrink linear forwards; }
+.toast.error .toast-bar { background: #E24B4A; }
+.toast.info .toast-bar  { background: var(--purple); }
+@keyframes toastShrink { from { width: 100%; } to { width: 0%; } }
+
+@media (max-width: 600px) {
+  .notif-panel { position: fixed; top: 64px; left: 8px; right: 8px; width: auto; }
+  .toast-stack { left: 12px; right: 12px; width: auto; top: 70px; }
+}
