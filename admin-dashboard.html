@@ -48,7 +48,7 @@
 <script>
   // ── Adjust these two if your setup differs
   const API_BASE = 'https://yorha-backend.onrender.com/api';
-  const TOKEN = localStorage.getItem('token'); // change key if your login stores it under a different name
+  const TOKEN = localStorage.getItem('yorha_token'); // matches Auth.setSession() in auth.js
 
   const naira = (n) => '₦' + Number(n || 0).toLocaleString();
 
