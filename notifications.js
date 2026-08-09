@@ -62,7 +62,6 @@ function updateNotifBadge() {
     badge.classList.toggle('hidden', unread === 0);
   });
 }
-
 function toggleNotifPanel(btn) {
   const wrap = btn ? btn.closest('.notif-bell-wrap') : document.querySelector('.notif-bell-wrap');
   wrap?.querySelector('.notif-panel')?.classList.toggle('open');

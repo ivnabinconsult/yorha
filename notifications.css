@@ -92,7 +92,10 @@ body[data-theme="dark"] .notif-dot.system { background: #2C2110; }
 .toast.info .toast-bar  { background: var(--purple); }
 @keyframes toastShrink { from { width: 100%; } to { width: 0%; } }
 
+.nav-notif-item { display: flex; align-items: center; margin-left: 4px; }
+
 @media (max-width: 600px) {
   .notif-panel { position: fixed; top: 64px; left: 8px; right: 8px; width: auto; }
   .toast-stack { left: 12px; right: 12px; width: auto; top: 70px; }
+  .nav-notif-item { display: none; }
 }

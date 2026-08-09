@@ -238,7 +238,6 @@
 
   const READER_PAGES=['reader-home','reader-store','reader-product','reader-checkout','reader-readview','reader-library','reader-settings'];
   const AUTHOR_PAGES=['author-dashboard'];
-  const SHARED_PAGES=['notifications'];
 
   function showPage(name){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -255,15 +254,8 @@
       });
     }else if(AUTHOR_PAGES.includes(name)){
       an.style.display='flex';rn.style.display='none';
-    }else if(SHARED_PAGES.includes(name)){
-      const user=Auth.getUser();
-      if(user && user.role==='author'){an.style.display='flex';rn.style.display='none';}
-      else{rn.style.display='flex';an.style.display='none';}
     }else{
       rn.style.display='none';an.style.display='none';
-    }
-    if(name==='notifications' && typeof loadNotifications==='function'){
-      loadNotifications();
     }
     if(name==='reader-home'){
       if(ALL_PRODUCTS.length > 0){
@@ -614,6 +606,7 @@
       <a class="${isActive('page-reader-home').trim()}" onclick="showPage('reader-home');toggleMobileMenu()">🏠 Home</a>
       <a class="${isActive('page-reader-store').trim()}" onclick="showPage('reader-store');toggleMobileMenu()">🛒 Store</a>
       <a class="${isActive('page-reader-library').trim()}" onclick="showPage('reader-library');toggleMobileMenu()">📚 My Library</a>
+      <a class="${isActive('page-notifications').trim()}" onclick="showPage('notifications');toggleMobileMenu()" style="display:flex;align-items:center;justify-content:space-between;">🔔 Notifications <span class="notif-badge drawer-badge hidden">0</span></a>
       <a class="${isActive('page-reader-settings').trim()}" onclick="showPage('reader-settings');toggleMobileMenu()">⚙️ Settings</a>
       <hr style="border-color:var(--border);margin:8px 0;">
       <button onclick="logout();toggleMobileMenu()">Sign Out</button>`;
@@ -623,12 +616,25 @@
       <a class="${isActivePanel('upload').trim()}" onclick="showAPanel('upload');toggleMobileMenu()">📤 Upload</a>
       <a class="${isActivePanel('works').trim()}" onclick="showAPanel('works');toggleMobileMenu()">📚 My Works</a>
       <a class="${isActivePanel('earnings').trim()}" onclick="showAPanel('earnings');toggleMobileMenu()">💰 Earnings</a>
+      <a class="${isActive('page-notifications').trim()}" onclick="showPage('notifications');toggleMobileMenu()" style="display:flex;align-items:center;justify-content:space-between;">🔔 Notifications <span class="notif-badge drawer-badge hidden">0</span></a>
       <a class="${isActivePanel('settings').trim()}" onclick="showAPanel('settings');toggleMobileMenu()">⚙️ Settings</a>
       <hr style="border-color:var(--border);margin:8px 0;">
       <button onclick="logout();toggleMobileMenu()">Sign Out</button>`;
 
     panel.innerHTML = role === 'author' ? authorLinks : readerLinks;
     drawer.classList.add('open');
+
+    // Reflect the current unread count in the drawer badge (rendered fresh
+    // above, so it starts blank) — pulls from the same notifCache the nav
+    // bell badges use.
+    if (typeof notifCache !== 'undefined') {
+      const unread = notifCache.filter(n => !n.read).length;
+      const drawerBadge = panel.querySelector('.drawer-badge');
+      if (drawerBadge) {
+        drawerBadge.textContent = unread > 9 ? '9+' : unread;
+        drawerBadge.classList.toggle('hidden', unread === 0);
+      }
+    }
   }
 
   window.addEventListener('DOMContentLoaded',()=>{
