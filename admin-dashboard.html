@@ -36,6 +36,22 @@
   .section-title { font-size: 15px; color: var(--muted); margin: 32px 0 12px; text-transform: uppercase; letter-spacing: 0.05em; }
   .error { color: var(--red); padding: 20px; }
   .loading { color: var(--muted); padding: 20px; }
+
+  .payout-list { display: flex; flex-direction: column; gap: 10px; }
+  .payout-row {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; display: flex;
+    justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .payout-row .who { font-weight: 600; }
+  .payout-row .details { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .payout-row .amount { font-size: 18px; font-weight: 700; color: var(--gold); }
+  .payout-actions { display: flex; gap: 8px; }
+  .btn { border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .btn-paid { background: var(--green); color: #06210f; }
+  .btn-failed { background: var(--red); color: #2a0a0a; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .empty-note { color: var(--muted); padding: 16px; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -44,6 +60,9 @@
 <p class="sub">Platform overview</p>
 
 <div id="content" class="loading">Loading dashboard…</div>
+
+<div class="section-title">Pending Payout Requests</div>
+<div id="payouts" class="loading">Loading payouts…</div>
 
 <script>
   // ── Adjust these two if your setup differs
@@ -97,7 +116,71 @@
     }
   }
 
+  // ── Pending payouts ──────────────────────────────────────
+  async function apiCall(path, options = {}) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}`, ...(options.headers || {}) },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
+
+  async function loadPayouts() {
+    const el = document.getElementById('payouts');
+    try {
+      const { payouts } = await apiCall('/payouts/admin/all?status=pending');
+      renderPayouts(payouts);
+    } catch (err) {
+      el.innerHTML = `<p class="error">${err.message}</p>`;
+    }
+  }
+
+  function renderPayouts(payouts) {
+    const el = document.getElementById('payouts');
+    if (!payouts.length) {
+      el.innerHTML = '<p class="empty-note">No pending payout requests.</p>';
+      return;
+    }
+    el.innerHTML = `<div class="payout-list">${payouts.map(p => `
+      <div class="payout-row" id="payout-${p._id}">
+        <div>
+          <div class="who">${p.author?.name || 'Unknown author'} <span style="color:var(--muted);font-weight:400">(${p.author?.email || ''})</span></div>
+          <div class="details">${p.bankName} · ${p.accountNumber} · ${p.accountName}</div>
+        </div>
+        <div class="amount">${naira(p.amount)}</div>
+        <div class="payout-actions">
+          <button class="btn btn-paid" onclick="markPayout('${p._id}', 'paid')">Mark Paid</button>
+          <button class="btn btn-failed" onclick="markPayout('${p._id}', 'failed')">Mark Failed</button>
+        </div>
+      </div>
+    `).join('')}</div>`;
+  }
+
+  async function markPayout(id, outcome) {
+    const row = document.getElementById(`payout-${id}`);
+    const buttons = row.querySelectorAll('button');
+    buttons.forEach(b => b.disabled = true);
+
+    try {
+      if (outcome === 'paid') {
+        const note = prompt('Optional note (e.g. "Sent via GTBank, ref #12345"):') || '';
+        await apiCall(`/payouts/admin/${id}/mark-paid`, { method: 'POST', body: JSON.stringify({ note }) });
+      } else {
+        const reason = prompt('Reason for failure (refunds balance to author):') || '';
+        await apiCall(`/payouts/admin/${id}/mark-failed`, { method: 'POST', body: JSON.stringify({ reason }) });
+      }
+      row.remove();
+      loadDashboard(); // refresh stats since payout totals changed
+    } catch (err) {
+      alert(err.message);
+      buttons.forEach(b => b.disabled = false);
+    }
+  }
+
   loadDashboard();
+  loadPayouts();
 </script>
 
 </body>
