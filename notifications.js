@@ -49,7 +49,7 @@ async function loadNotifications() {
 function renderNotifications() {
   const user = (typeof Auth !== 'undefined') ? Auth.getUser() : null;
   const homeTarget = user && user.role === 'author'
-    ? "showAPanel('overview')" : "showPage('reader-home')";
+    ? "showPage('author-dashboard');showAPanel('overview')" : "showPage('reader-home')";
 
   const html = notifCache.length
     ? notifCache.map(notifItemHtml).join('')
