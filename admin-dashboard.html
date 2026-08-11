@@ -52,6 +52,21 @@
   .btn-failed { background: var(--red); color: #2a0a0a; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .empty-note { color: var(--muted); padding: 16px; font-size: 14px; }
+
+  .users-toggle-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--gold);
+    border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600;
+    cursor: pointer; margin: 32px 0 12px; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .users-toggle-btn:hover { border-color: var(--gold); }
+  #users-panel { display: none; }
+  #users-search {
+    width: 100%; max-width: 320px; padding: 10px 14px; margin-bottom: 12px;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text);
+  }
+  #users-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  #users-table th, #users-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  #users-table th { color: var(--gold); }
 </style>
 </head>
 <body>
@@ -63,6 +78,15 @@
 
 <div class="section-title">Pending Payout Requests</div>
 <div id="payouts" class="loading">Loading payouts…</div>
+
+<button class="users-toggle-btn" onclick="toggleUsers()">👥 Users <span id="users-count-badge"></span></button>
+<div id="users-panel">
+  <input id="users-search" type="text" placeholder="Search by name or email..." oninput="filterUsers()">
+  <table id="users-table">
+    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
+    <tbody id="users-rows"></tbody>
+  </table>
+</div>
 
 <script>
   // ── Adjust these two if your setup differs
@@ -177,6 +201,49 @@
       alert(err.message);
       buttons.forEach(b => b.disabled = false);
     }
+  }
+
+  // ── Users panel ──────────────────────────────────────────
+  let allUsers = [];
+  let usersLoaded = false;
+
+  async function toggleUsers() {
+    const panel = document.getElementById('users-panel');
+    if (panel.style.display === 'block') {
+      panel.style.display = 'none';
+      return;
+    }
+    panel.style.display = 'block';
+    if (!usersLoaded) await loadUsers();
+  }
+
+  async function loadUsers() {
+    try {
+      const data = await apiCall('/admin/users-overview');
+      allUsers = data.users;
+      usersLoaded = true;
+      document.getElementById('users-count-badge').textContent = `(${data.total})`;
+      renderUsers(allUsers);
+    } catch (err) {
+      document.getElementById('users-rows').innerHTML = `<tr><td colspan="4" class="error">${err.message}</td></tr>`;
+    }
+  }
+
+  function renderUsers(list) {
+    document.getElementById('users-rows').innerHTML = list.map((u, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${u.name || '—'}</td>
+        <td>${u.email}</td>
+        <td>${new Date(u.joined).toLocaleDateString()}</td>
+      </tr>`).join('');
+  }
+
+  function filterUsers() {
+    const q = document.getElementById('users-search').value.toLowerCase();
+    renderUsers(allUsers.filter(u =>
+      (u.name || '').toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+    ));
   }
 
   loadDashboard();
