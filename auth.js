@@ -55,6 +55,7 @@ const Auth = {
   setSession(token, user) {
     localStorage.setItem('yorha_token', token);
     localStorage.setItem('yorha_user', JSON.stringify(user));
+    if (typeof updateAdminLinkVisibility === 'function') updateAdminLinkVisibility();
   },
   getToken() {
     return localStorage.getItem('yorha_token');
@@ -71,6 +72,18 @@ const Auth = {
     return !!this.getToken();
   }
 };
+
+/* ─── Reveal Admin nav link for owner account only ─── */
+const OWNER_EMAIL = 'leonardlouis034@gmail.com';
+function updateAdminLinkVisibility() {
+  const user = Auth.getUser();
+  const show = !!(user && user.email === OWNER_EMAIL);
+  ['admin-link-reader', 'admin-link-author'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'inline-flex' : 'none';
+  });
+}
+document.addEventListener('DOMContentLoaded', updateAdminLinkVisibility);
 
 /* ─── Fetch wrapper — auto-attaches Bearer token ─── */
 async function apiFetch(path, options = {}) {
