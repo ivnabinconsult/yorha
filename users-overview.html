@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Yorha — Users Overview</title>
+<style>
+  :root{--navy:#0d0b1e;--violet:#6d4aff;--gold:#e6c565;--card:#161329;--text:#eae7f5;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:system-ui,sans-serif;background:var(--navy);color:var(--text);padding:2rem;}
+  h1{color:var(--gold);font-size:1.4rem;margin-bottom:.25rem;}
+  .count{font-size:2.5rem;font-weight:700;color:var(--violet);margin:0 0 1.5rem;}
+  input{width:100%;max-width:320px;padding:.6rem .9rem;border-radius:8px;border:1px solid #332e5c;
+    background:var(--card);color:var(--text);margin-bottom:1rem;}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden;}
+  th,td{text-align:left;padding:.7rem 1rem;border-bottom:1px solid #262147;font-size:.9rem;}
+  th{color:var(--gold);}
+  tr:hover{background:#1e1a3a;}
+  .err{color:#ff8080;}
+  .token-box{margin-bottom:1.5rem;}
+  button{background:var(--violet);color:#fff;border:none;padding:.5rem 1rem;border-radius:6px;cursor:pointer;}
+</style>
+</head>
+<body>
+  <h1>Yorha — Users Overview</h1>
+  <div id="count" class="count">—</div>
+
+  <div class="token-box">
+    <input id="token" type="password" placeholder="Paste admin JWT token">
+    <button onclick="load()">Load</button>
+  </div>
+
+  <input id="search" type="text" placeholder="Search by name or email..." oninput="filter()" style="display:none">
+  <table id="tbl" style="display:none">
+    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div id="error" class="err"></div>
+
+<script>
+const API_BASE = "https://yorha-backend.onrender.com/api/admin/users-overview";
+
+let allUsers = [];
+
+async function load(){
+  const token = document.getElementById('token').value.trim();
+  const errEl = document.getElementById('error');
+  errEl.textContent = '';
+  if(!token){ errEl.textContent = 'Paste your admin token first.'; return; }
+
+  try{
+    const res = await fetch(API_BASE, { headers: { Authorization: `Bearer ${token}` }});
+    if(!res.ok) throw new Error(res.status === 403 ? 'Not authorized' : 'Request failed');
+    const data = await res.json();
+    allUsers = data.users;
+    document.getElementById('count').textContent = data.total;
+    document.getElementById('search').style.display = 'block';
+    document.getElementById('tbl').style.display = 'table';
+    render(allUsers);
+  }catch(e){
+    errEl.textContent = e.message;
+  }
+}
+
+function render(list){
+  const rows = document.getElementById('rows');
+  rows.innerHTML = list.map((u,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${u.name || '—'}</td>
+      <td>${u.email}</td>
+      <td>${new Date(u.joined).toLocaleDateString()}</td>
+    </tr>`).join('');
+}
+
+function filter(){
+  const q = document.getElementById('search').value.toLowerCase();
+  render(allUsers.filter(u =>
+    (u.name||'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+  ));
+}
+</script>
+</body>
+</html>
