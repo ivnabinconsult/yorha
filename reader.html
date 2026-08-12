@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reader — Yorha</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root{
+    --bg:#0f0f13; --bg2:#17171d; --text:#eaeaea; --text3:#8a8a94;
+    --purple:#8b5cf6; --border:#2a2a33;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;height:100vh;overflow:hidden;}
+
+  #reader-topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);
+    position:fixed;top:0;left:0;right:0;z-index:10;
+  }
+  #reader-topbar .title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50vw;}
+  #reader-topbar button{background:none;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;}
+  #reader-topbar button:hover{border-color:var(--purple);}
+
+  #reader-canvas-wrap{
+    position:fixed;top:52px;bottom:56px;left:0;right:0;
+    overflow:auto;display:flex;justify-content:center;align-items:flex-start;
+    background:#000;
+  }
+  #pdf-canvas{max-width:100%;box-shadow:0 0 20px rgba(0,0,0,.5);}
+
+  #reader-bottombar{
+    position:fixed;bottom:0;left:0;right:0;height:56px;
+    background:var(--bg2);border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;gap:16px;
+  }
+  #reader-bottombar button{
+    background:var(--purple);border:none;color:#fff;width:40px;height:40px;
+    border-radius:8px;cursor:pointer;font-size:16px;
+  }
+  #reader-bottombar button:disabled{opacity:.3;cursor:not-allowed;}
+  #page-indicator{font-size:14px;color:var(--text3);min-width:80px;text-align:center;}
+
+  #reader-loading, #reader-error{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:12px;color:var(--text3);
+  }
+  #reader-error{display:none;}
+  #reader-error a{color:var(--purple);cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="reader-topbar">
+  <button onclick="history.back()">← Back</button>
+  <span class="title" id="reader-title">Loading…</span>
+  <span style="width:70px;"></span>
+</div>
+
+<div id="reader-loading">Loading your book…</div>
+<div id="reader-error">
+  <div id="reader-error-msg">Something went wrong.</div>
+  <a onclick="location.reload()">Try again</a>
+</div>
+
+<div id="reader-canvas-wrap" style="display:none;">
+  <canvas id="pdf-canvas"></canvas>
+</div>
+
+<div id="reader-bottombar" style="display:none;">
+  <button id="prev-btn" onclick="goPrevPage()">‹</button>
+  <span id="page-indicator">1 / 1</span>
+  <button id="next-btn" onclick="goNextPage()">›</button>
+</div>
+
+<script>
+const API_BASE = 'https://yorha-backend.onrender.com/api';
+
+function getToken(){ return localStorage.getItem('yorha_token'); }
+
+function getProductId(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('productId');
+}
+
+let pdfDoc = null;
+let currentPage = 1;
+let totalPages = 1;
+let productId = null;
+let saveTimeout = null;
+
+async function apiFetch(path, options = {}){
+  const token = getToken();
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || data.errors?.[0]?.msg || 'Request failed');
+  return data;
+}
+
+function showError(msg){
+  document.getElementById('reader-loading').style.display = 'none';
+  document.getElementById('reader-error-msg').textContent = msg;
+  document.getElementById('reader-error').style.display = 'flex';
+}
+
+async function initReader(){
+  productId = getProductId();
+  if (!productId){ showError('No book specified.'); return; }
+  if (!getToken()){ showError('Please log in to read this content.'); return; }
+
+  try {
+    const [readerData, progressData] = await Promise.all([
+      apiFetch(`/reader/${productId}`),
+      apiFetch(`/reader/${productId}/progress`).catch(() => null)
+    ]);
+
+    document.getElementById('reader-title').textContent = readerData.title || 'Reading';
+    currentPage = progressData?.currentPage || 1;
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfDoc = await pdfjsLib.getDocument(readerData.fileUrl).promise;
+    totalPages = pdfDoc.numPages;
+
+    if (currentPage > totalPages) currentPage = 1;
+
+    document.getElementById('reader-loading').style.display = 'none';
+    document.getElementById('reader-canvas-wrap').style.display = 'flex';
+    document.getElementById('reader-bottombar').style.display = 'flex';
+
+    await renderPage(currentPage);
+  } catch (err) {
+    console.error(err);
+    showError(err.message || 'Could not load this book.');
+  }
+}
+
+async function renderPage(pageNum){
+  const page = await pdfDoc.getPage(pageNum);
+  const canvas = document.getElementById('pdf-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const wrapWidth = document.getElementById('reader-canvas-wrap').clientWidth - 32;
+  const baseViewport = page.getViewport({ scale: 1 });
+  const scale = Math.min(wrapWidth / baseViewport.width, 2.5);
+  const viewport = page.getViewport({ scale });
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  currentPage = pageNum;
+  document.getElementById('page-indicator').textContent = `${currentPage} / ${totalPages}`;
+  document.getElementById('prev-btn').disabled = currentPage <= 1;
+  document.getElementById('next-btn').disabled = currentPage >= totalPages;
+  document.getElementById('reader-canvas-wrap').scrollTop = 0;
+
+  scheduleProgressSave();
+}
+
+function scheduleProgressSave(){
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    apiFetch(`/reader/${productId}/progress`, {
+      method: 'POST',
+      body: JSON.stringify({ currentPage, totalPages })
+    }).catch(err => console.warn('Progress save failed:', err.message));
+  }, 800);
+}
+
+function goNextPage(){ if (currentPage < totalPages) renderPage(currentPage + 1); }
+function goPrevPage(){ if (currentPage > 1) renderPage(currentPage - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') goNextPage();
+  if (e.key === 'ArrowLeft') goPrevPage();
+});
+
+window.addEventListener('resize', () => { if (pdfDoc) renderPage(currentPage); });
+
+initReader();
+</script>
+
+</body>
+</html>

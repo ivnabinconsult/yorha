@@ -695,9 +695,9 @@ async function loadReaderLibrary(){
               ? `<img src="${p.coverImage.url}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>`
               : `<span style="font-size:46px;">${m.emoji}</span>`;
             return `
-            <div class="lib-card" onclick="downloadLibraryItem('${p._id}')">
+            <div class="lib-card" onclick="openReader('${p._id}')">
               <div class="lib-cover ${m.cover}">${coverHtml}</div>
-              <div class="lib-body"><div class="lib-title">${p.title || 'Untitled'}</div><div class="lib-meta">${p.contentType || ''} · ${p.authorName || 'Unknown'}</div><span class="lib-continue">Download / Read →</span></div>
+              <div class="lib-body"><div class="lib-title">${p.title || 'Untitled'}</div><div class="lib-meta">${p.contentType || ''} · ${p.authorName || 'Unknown'}</div><span class="lib-continue">Read →</span></div>
             </div>`;
           }).join('');
     }
@@ -721,6 +721,10 @@ async function loadReaderLibrary(){
     if(gridEl) gridEl.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text3);">Could not load your library.</div>';
     if(historyBody) historyBody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3);">Could not load purchase history.</td></tr>';
   }
+}
+
+function openReader(productId){
+  window.location.href = `reader.html?productId=${productId}`;
 }
 
 async function downloadLibraryItem(productId){
