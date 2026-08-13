@@ -75,6 +75,9 @@
 
   // ── Currently selected product
   let SELECTED_PRODUCT = null;
+  // ── Wishlisted product IDs (synced on login / page load)
+  let WISHLIST_IDS = new Set();
+  let WISHLIST_ITEMS = [];
 
   // ── Show product detail page with real data
   function showProduct(product){
@@ -108,6 +111,9 @@
     set('pdetail-info-chapters', product.totalChapters || '—');
     set('pdetail-info-pages', product.totalPages || '—');
     set('pdetail-info-updated', product.publishedAt ? new Date(product.publishedAt).toLocaleDateString('en-GB', {month:'short', year:'numeric'}) : '—');
+
+    const wishBtn = document.getElementById('pdetail-wishlist-btn');
+    if(wishBtn) wishBtn.textContent = WISHLIST_IDS.has(product._id) ? '♥' : '♡';
 
     // Price buttons
     const price = '₦' + Number(product.price).toLocaleString();
@@ -236,7 +242,7 @@
     applyFilters();
   }
 
-  const READER_PAGES=['reader-home','reader-store','reader-product','reader-checkout','reader-readview','reader-library','reader-settings'];
+  const READER_PAGES=['reader-home','reader-store','reader-product','reader-checkout','reader-readview','reader-library','reader-wishlist','reader-settings'];
   const AUTHOR_PAGES=['author-dashboard'];
 
   function showPage(name){
@@ -291,6 +297,9 @@
     }
     if(name==='reader-library'){
       loadReaderLibrary();
+    }
+    if(name==='reader-wishlist'){
+      loadWishlist();
     }
     if(name==='reader-readview'){
       const titleEl = document.getElementById('readview-title');
@@ -725,6 +734,63 @@ async function loadReaderLibrary(){
 
 function openReader(productId){
   window.location.href = `reader.html?productId=${productId}`;
+}
+
+async function toggleWishlist(productId){
+  if(!productId) return;
+  if(!Auth.isLoggedIn()){ alert('Please log in to save items to your wishlist.'); return; }
+
+  try {
+    const data = await apiFetch(`/wishlist/${productId}`, { method: 'POST' });
+    if(data.wishlisted){ WISHLIST_IDS.add(productId); } else { WISHLIST_IDS.delete(productId); }
+
+    const wishBtn = document.getElementById('pdetail-wishlist-btn');
+    if(wishBtn && SELECTED_PRODUCT && SELECTED_PRODUCT._id === productId){
+      wishBtn.textContent = data.wishlisted ? '♥' : '♡';
+    }
+    // refresh grid if currently viewing the wishlist page
+    if(document.getElementById('page-reader-wishlist')?.classList.contains('active')){
+      loadWishlist();
+    }
+  } catch(err){
+    alert(err.message || 'Could not update wishlist.');
+  }
+}
+
+async function loadWishlist(){
+  const gridEl = document.getElementById('wishlist-grid');
+  try {
+    const data = await apiFetch('/wishlist');
+    const items = data.wishlist || [];
+    WISHLIST_IDS = new Set(items.map(p => p._id));
+    WISHLIST_ITEMS = items; // cache full objects for click-through
+
+    if(gridEl){
+      gridEl.innerHTML = items.length === 0
+        ? `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text3);">Nothing saved yet. <a onclick="showPage('reader-store')" style="color:var(--purple);cursor:pointer;">Browse the store →</a></div>`
+        : items.map(p => {
+            const m = TYPE_META[p.contentType] || { emoji:'📄', cover:'cover-1' };
+            const coverHtml = p.coverImage && p.coverImage.url
+              ? `<img src="${p.coverImage.url}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>`
+              : `<span style="font-size:46px;">${m.emoji}</span>`;
+            return `
+            <div class="lib-card" onclick="openWishlistItem('${p._id}')">
+              <div class="lib-cover ${m.cover}">${coverHtml}</div>
+              <div class="lib-body"><div class="lib-title">${p.title || 'Untitled'}</div><div class="lib-meta">${p.contentType || ''} · ${p.authorName || 'Unknown'}</div><span class="lib-continue">₦${Number(p.price).toLocaleString()} →</span></div>
+            </div>`;
+          }).join('');
+    }
+  } catch(err){
+    console.error('Failed to load wishlist:', err.message);
+    if(gridEl) gridEl.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text3);">Could not load your wishlist.</div>';
+  }
+}
+
+function openWishlistItem(productId){
+  const product = WISHLIST_ITEMS.find(p => p._id === productId);
+  if(!product) return;
+  showProduct(product);
+  showPage('reader-product');
 }
 
 async function downloadLibraryItem(productId){
