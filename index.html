@@ -340,7 +340,6 @@
         <div class="product-cover-lg cover-2" id="pdetail-cover">⚔️</div>
         <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
           <button class="btn btn-primary pdetail-buy-btn" style="width:100%;padding:13px;font-size:15px;">Purchase — ₦2,000</button>
-          <button class="btn btn-ghost" style="width:100%;padding:13px;font-size:15px;" onclick="showPage('reader-readview')">Read Preview (Ch.1 Free)</button>
         </div>
         <div class="product-info-grid" style="margin-top:18px;">
           <div class="info-item"><div class="info-label">Type</div><div class="info-val" id="pdetail-info-type">Manga</div></div>
@@ -370,7 +369,6 @@
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
           <button class="btn btn-primary pdetail-buy-btn" style="padding:13px 28px;font-size:15px;">Buy Now</button>
-          <button class="btn btn-ghost" style="padding:13px 28px;font-size:15px;" onclick="showPage('reader-readview')">Read Preview →</button>
           <button class="btn btn-ghost" style="padding:13px;font-size:18px;" title="Wishlist">♡</button>
         </div>
         <div style="margin-top:38px;padding-top:32px;border-top:1px solid var(--border);">
@@ -394,7 +392,7 @@
     <div class="success-title">Purchase Complete!</div>
     <p class="success-sub" id="success-message">Your purchase has been added to your library. You can start reading right now — enjoy!</p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn btn-primary" style="padding:13px 28px;font-size:15px;" onclick="showPage('reader-readview')">Start Reading →</button>
+      <button class="btn btn-primary" style="padding:13px 28px;font-size:15px;" onclick="openReader(SELECTED_PRODUCT._id)">Start Reading →</button>
       <button class="btn btn-ghost" style="padding:13px 28px;font-size:15px;" onclick="showPage('reader-library')">Go to My Library</button>
     </div>
   </div>
@@ -433,57 +431,6 @@
       <div style="margin-top:16px;padding:14px;background:var(--tag-bg);border-radius:var(--radius-sm);border:1px solid var(--border);font-size:13px;color:var(--text3);line-height:1.6;">
         💡 <strong style="color:var(--text);">Support:</strong> Having an issue with your purchase? Contact us and we'll help sort it out.
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════
-     READER — READ VIEW
-════════════════════════════════ -->
-<div class="page padtop" id="page-reader-readview">
-  <div class="reader-topbar">
-    <button class="btn btn-ghost" onclick="showPage('reader-product')" style="font-size:12px;padding:6px 12px;">← Back</button>
-    <span class="reader-title" id="readview-title">—</span>
-    <span class="reader-chapter">Sample Preview</span>
-    <div class="chapter-nav">
-      <button class="ch-btn" disabled>‹ Prev</button>
-      <select class="sort-select" style="width:auto;padding:6px 12px;font-size:13px;" disabled>
-        <option>Sample Preview</option>
-      </select>
-      <button class="ch-btn" disabled>Next ›</button>
-    </div>
-  </div>
-  <div class="reader-content">
-    <div style="margin-bottom:20px;padding:12px 16px;background:var(--tag-bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;color:var(--text3);text-align:center;">
-      📖 In-app chapter-by-chapter reading is coming soon. The text below is a sample of what that experience will look like — after purchase, use the <strong style="color:var(--text);">Download</strong> button in your Library to get the real, complete file.
-    </div>
-    <div class="reader-chapter-title">Sample Preview</div>
-    <div class="reader-text">
-      <p>The sky above Akaland had not been blue for seven years.</p>
-      <p>Kael remembered the last time he had seen it — standing at the edge of his father's forge, watching the light turn strange and thin before the first cracks appeared in the Veil. He had been fifteen. He had not yet learned to be afraid.</p>
-      <p>Now he was twenty-two, and fear had become his most practiced skill.</p>
-      <p>He moved through the ruins of the outer market with the practiced silence of someone who had spent years learning how to be invisible. The morning fog clung low to the broken stones, thick enough that his breath disappeared into it two feet from his face. Somewhere ahead, a torch guttered against the wind.</p>
-      <p>The mark on his forearm burned.</p>
-      <p>He pressed his palm against it, feeling the raised lines of the Void's sigil pulse beneath his skin like a second heartbeat. It had been quiet for three weeks — long enough that he had almost started to believe it was finally dormant. He should have known better. The Void was never quiet without reason.</p>
-      <p>Something was coming.</p>
-      <p>He stopped walking. Around him the ruins stretched in every direction, the bones of what had once been the empire's most prosperous trade city. Before the Veil cracked. Before the Hollow poured through.</p>
-      <p>"You're going the wrong way."</p>
-      <p>The voice came from above him. He didn't draw his blade. Instead he stepped back, putting a crumbled wall between himself and the direction of the voice, and waited.</p>
-      <p>A girl dropped from the top of the wall. She landed in a crouch, then straightened, and looked at him with the flat, assessing expression of someone who had decided within seconds whether or not to trust him.</p>
-      <p>"The eastern gate collapsed two months ago," she said. "If you're heading to the Warden's post, you need to go north, past the old granary."</p>
-      <p>"I know where the Warden's post is."</p>
-      <p>"Then why were you walking toward a dead end?"</p>
-      <p>Kael looked at her for a long moment. She was young — younger than him — with the kind of wariness in her eyes that came from spending too much time in the outer provinces.</p>
-      <p>"Because," he said, "whatever is in that direction just woke up my mark. And I want to see it before it sees me."</p>
-      <p>Her expression shifted. Not fear — something more complicated. Recognition, maybe. Or the beginning of the specific kind of dread that came from understanding exactly what kind of trouble you had just walked into.</p>
-      <p>She looked at his forearm. At the mark, still faintly glowing through the fabric of his sleeve.</p>
-      <p>"You're a Slayer," she said.</p>
-      <p>"I was," Kael said. "Come on. If it's a large one, I'll need a second pair of eyes."</p>
-    </div>
-    <div style="margin-top:44px;padding:24px;background:var(--bg3);border-radius:var(--radius);border:1px solid var(--border);text-align:center;">
-      <div style="font-family:'Cinzel',serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:7px;">End of Sample Preview</div>
-      <p style="font-size:14px;color:var(--text3);margin-bottom:16px;">Purchase to get instant access to the complete file.</p>
-      <button class="btn btn-primary" id="readview-buy-btn" style="padding:11px 26px;" onclick="showPage('reader-checkout')">Buy Full Volume</button>
     </div>
   </div>
 </div>
