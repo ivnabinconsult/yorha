@@ -64,9 +64,25 @@
     width: 100%; max-width: 320px; padding: 10px 14px; margin-bottom: 12px;
     border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text);
   }
-  #users-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  #users-table th, #users-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
+  #users-table { width: 100%; min-width: 480px; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  #users-table th, #users-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; white-space: nowrap; }
   #users-table th { color: var(--gold); }
+
+  @media (max-width: 600px) {
+    body { padding: 24px 14px; }
+    h1 { font-size: 22px; }
+    .grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .card { padding: 14px; }
+    .card .value { font-size: 20px; }
+    .section-title { font-size: 13px; margin: 24px 0 10px; }
+    .payout-row { flex-direction: column; align-items: stretch; padding: 14px; }
+    .payout-row .amount { order: -1; }
+    .payout-actions { width: 100%; }
+    .payout-actions .btn { flex: 1; padding: 10px; }
+    .users-toggle-btn { width: 100%; justify-content: center; }
+    #users-search { max-width: none; }
+  }
 </style>
 </head>
 <body>
@@ -82,10 +98,12 @@
 <button class="users-toggle-btn" onclick="toggleUsers()">👥 Users <span id="users-count-badge"></span></button>
 <div id="users-panel">
   <input id="users-search" type="text" placeholder="Search by name or email..." oninput="filterUsers()">
-  <table id="users-table">
-    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
-    <tbody id="users-rows"></tbody>
-  </table>
+  <div class="table-scroll">
+    <table id="users-table">
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
+      <tbody id="users-rows"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
