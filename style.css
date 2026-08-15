@@ -1807,6 +1807,18 @@ button:disabled,
   margin-top: 5px;
 }
 
+/* GRID-2 — generic two-column layout, used in Overview/Upload/Payout/Settings */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* GRID-3 — generic three-column layout, used on landing page ("How Yorha Works") */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
 /* PANELS */
 .a-panel {
   background: var(--card);
@@ -2158,6 +2170,12 @@ button:disabled,
     padding: 22px;
   }
   .a-stats {
+    grid-template-columns: 1fr;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .grid-3 {
     grid-template-columns: 1fr;
   }
   .library-page {
