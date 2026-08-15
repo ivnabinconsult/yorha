@@ -57,6 +57,9 @@ app.use('/api/payments', require('./routes/payments'));
 app.use('/api/payouts',  require('./routes/payouts'));
 app.use('/api/reviews',  require('./routes/reviews'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/admin',    require('./routes/admin'));
+app.use('/api/reader',   require('./routes/reader'));
+app.use('/api/wishlist', require('./routes/wishlist'));
 
 // ── Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
