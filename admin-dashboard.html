@@ -53,6 +53,20 @@
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .empty-note { color: var(--muted); padding: 16px; font-size: 14px; }
 
+  .token-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; margin-bottom: 24px; display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .token-box input {
+    flex: 1; min-width: 200px; padding: 10px 14px;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text);
+  }
+  .token-box button {
+    background: var(--gold); color: #2a2100; border: none; border-radius: 8px;
+    padding: 10px 18px; font-weight: 600; cursor: pointer;
+  }
+  .token-box p { width: 100%; }
+
   .users-toggle-btn {
     background: var(--card); border: 1px solid var(--border); color: var(--gold);
     border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600;
@@ -90,6 +104,12 @@
 <h1>Yorha Admin</h1>
 <p class="sub">Platform overview</p>
 
+<div id="token-box" class="token-box" style="display:none;">
+  <input id="token-input" type="password" placeholder="Paste admin token (copy from desktop's localStorage → yorha_token)">
+  <button onclick="useManualToken()">Use this token</button>
+  <p id="token-box-note" style="color:var(--muted);font-size:12px;margin:8px 0 0;"></p>
+</div>
+
 <div id="content" class="loading">Loading dashboard…</div>
 
 <div class="section-title">Pending Payout Requests</div>
@@ -107,16 +127,40 @@
 </div>
 
 <script>
-  // ── Adjust these two if your setup differs
+  // ── Adjust this if your setup differs
   const API_BASE = 'https://yorha-backend.onrender.com/api';
-  const TOKEN = localStorage.getItem('yorha_token'); // matches Auth.setSession() in auth.js
+
+  // TOKEN is mutable now — localStorage is per-device, so a token saved
+  // on desktop never shows up here on mobile automatically. If none is
+  // found (or the stored one is rejected), showTokenBox() lets you paste
+  // one in manually and it gets saved to *this* device's localStorage,
+  // matching how Auth.setSession() stores it in the main app.
+  let TOKEN = localStorage.getItem('yorha_token');
 
   const naira = (n) => '₦' + Number(n || 0).toLocaleString();
+
+  function showTokenBox(message) {
+    const box = document.getElementById('token-box');
+    box.style.display = 'flex';
+    document.getElementById('token-box-note').textContent =
+      message || 'On desktop: open devtools → Application → Local Storage → copy the "yorha_token" value, then paste it here.';
+  }
+
+  function useManualToken() {
+    const val = document.getElementById('token-input').value.trim();
+    if (!val) return;
+    TOKEN = val;
+    localStorage.setItem('yorha_token', val); // persists for future visits on this device
+    document.getElementById('token-box').style.display = 'none';
+    loadDashboard();
+    loadPayouts();
+  }
 
   async function loadDashboard() {
     const el = document.getElementById('content');
     if (!TOKEN) {
-      el.innerHTML = '<p class="error">No auth token found in localStorage. Log in as an admin account first.</p>';
+      el.innerHTML = '<p class="error">No auth token found on this device.</p>';
+      showTokenBox();
       return;
     }
     try {
@@ -124,7 +168,12 @@
         headers: { Authorization: `Bearer ${TOKEN}` },
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load dashboard');
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          showTokenBox('Token rejected (invalid or expired). Paste a fresh one from a device where you\'re currently logged in as admin.');
+        }
+        throw new Error(data.error || 'Failed to load dashboard');
+      }
 
       el.innerHTML = `
         <div class="section-title">Users</div>
@@ -165,7 +214,11 @@
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}`, ...(options.headers || {}) },
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Request failed');
+    if (!res.ok) {
+      const err = new Error(data.error || 'Request failed');
+      err.status = res.status;
+      throw err;
+    }
     return data;
   }
 
@@ -175,6 +228,7 @@
       const { payouts } = await apiCall('/payouts/admin/all?status=pending');
       renderPayouts(payouts);
     } catch (err) {
+      if (err.status === 401 || err.status === 403) showTokenBox('Token rejected (invalid or expired).');
       el.innerHTML = `<p class="error">${err.message}</p>`;
     }
   }
@@ -243,6 +297,7 @@
       document.getElementById('users-count-badge').textContent = `(${data.total})`;
       renderUsers(allUsers);
     } catch (err) {
+      if (err.status === 401 || err.status === 403) showTokenBox('Token rejected (invalid or expired).');
       document.getElementById('users-rows').innerHTML = `<tr><td colspan="4" class="error">${err.message}</td></tr>`;
     }
   }
