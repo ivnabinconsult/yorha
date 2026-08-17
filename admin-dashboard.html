@@ -104,6 +104,13 @@
 <h1>Yorha Admin</h1>
 <p class="sub">Platform overview</p>
 
+<button class="users-toggle-btn" onclick="generateAdminToken()" id="gen-token-btn">🔑 Generate permanent token for another device</button>
+<div id="generated-token-box" class="token-box" style="display:none;">
+  <input id="generated-token-output" type="text" readonly>
+  <button onclick="copyGeneratedToken()">Copy</button>
+  <p style="color:var(--muted);font-size:12px;margin:8px 0 0;">Paste this into the token box on your other device. Valid for ~1 year — treat it like a password.</p>
+</div>
+
 <div id="token-box" class="token-box" style="display:none;">
   <input id="token-input" type="password" placeholder="Paste admin token (copy from desktop's localStorage → yorha_token)">
   <button onclick="useManualToken()">Use this token</button>
@@ -154,6 +161,37 @@
     document.getElementById('token-box').style.display = 'none';
     loadDashboard();
     loadPayouts();
+  }
+
+  // Requires an already-valid TOKEN (any normal 24h admin session works
+  // fine here) — mints a long-lived token you paste into the box above
+  // on any OTHER device, so that device doesn't need repeated logins.
+  async function generateAdminToken() {
+    if (!TOKEN) { showTokenBox('Log in / paste a working token here first, then generate a permanent one.'); return; }
+    const btn = document.getElementById('gen-token-btn');
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
+    try {
+      const res = await fetch(`${API_BASE}/auth/admin-token`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${TOKEN}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to generate token');
+      document.getElementById('generated-token-output').value = data.token;
+      document.getElementById('generated-token-box').style.display = 'flex';
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔑 Generate permanent token for another device';
+    }
+  }
+
+  function copyGeneratedToken() {
+    const input = document.getElementById('generated-token-output');
+    input.select();
+    navigator.clipboard?.writeText(input.value).catch(() => {});
   }
 
   async function loadDashboard() {
