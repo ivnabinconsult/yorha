@@ -915,7 +915,10 @@ footer::before {
 }
 
 .auth-left {
-  background: linear-gradient(160deg, #1a0533 0%, #4a0080 50%, #7C3AED 100%);
+  background-color: #1a0533;
+  background-image: url('assets/reader-auth.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -924,7 +927,10 @@ footer::before {
   overflow: hidden;
 }
 .auth-left.green-side {
-  background: linear-gradient(160deg, #064e3b 0%, #065f46 50%, #10B981 100%);
+  background-color: #064e3b;
+  background-image: url('assets/author-auth.jpg');
+  background-size: cover;
+  background-position: center;
 }
 .auth-left::before {
   content: 'YORHA';
@@ -940,20 +946,19 @@ footer::before {
 .auth-left::after {
   content: '';
   position: absolute;
-  top: -120px;
-  right: -120px;
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
-  border-radius: 50%;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(26,5,51,.75) 0%, rgba(74,0,128,.6) 50%, rgba(124,58,237,.5) 100%);
   pointer-events: none;
+}
+.auth-left.green-side::after {
+  background: linear-gradient(160deg, rgba(6,78,59,.75) 0%, rgba(6,95,70,.6) 50%, rgba(16,185,129,.5) 100%);
 }
 
 /* Floating decorative book shapes on auth panels */
 .auth-deco {
   position: absolute;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 }
 .auth-deco-book {
   width: 80px;
@@ -1008,6 +1013,7 @@ footer::before {
   font-size: 120px;
   line-height: 1;
   animation: floatBook 7s ease-in-out infinite;
+  z-index: 1;
 }
 
 @keyframes floatBook {
@@ -1017,7 +1023,8 @@ footer::before {
 
 .auth-brand {
   text-align: center;
-  z-index: 1;
+  z-index: 2;
+  position: relative;
 }
 .auth-brand-logo {
   font-family: 'Cinzel', serif;
